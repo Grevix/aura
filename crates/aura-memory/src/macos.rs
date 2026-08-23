@@ -18,27 +18,29 @@ pub fn spawn_macos_rss_monitor(pid: u32, budget_bytes: u64) -> Result<()> {
 
     thread::spawn(move || {
         // soft_limit is only used inside cfg(target_os = "macos"); on other platforms
-        // the variable is intentionally unused and that is suppressed by the leading _.
+        // the variable is intentionally suppressed.
         let soft_limit = (budget_bytes as f64 * 0.92) as u64;
         while running_clone.load(Ordering::Relaxed) {
             thread::sleep(Duration::from_millis(50));
-            // Working-set memory telemetry check
+            // Working-set RSS telemetry check using mach2::traps::mach_task_self (replaces deprecated libc::mach_task_self)
             #[cfg(target_os = "macos")]
             {
-                let mut task_info: libc::mach_task_basic_info = unsafe { std::mem::zeroed() };
+                use mach2::traps::mach_task_self;
+
+                let mut task_info_data: libc::mach_task_basic_info = unsafe { std::mem::zeroed() };
                 let mut count = (std::mem::size_of::<libc::mach_task_basic_info>()
                     / std::mem::size_of::<libc::integer_t>())
                     as libc::mach_msg_type_number_t;
                 let kr = unsafe {
                     libc::task_info(
-                        libc::mach_task_self(),
+                        mach_task_self(),
                         libc::MACH_TASK_BASIC_INFO,
-                        &mut task_info as *mut _ as *mut _,
+                        &mut task_info_data as *mut _ as *mut _,
                         &mut count,
                     )
                 };
                 if kr == libc::KERN_SUCCESS {
-                    let rss = task_info.resident_size as u64;
+                    let rss = task_info_data.resident_size as u64;
                     if rss > soft_limit {
                         warn!(
                             "macOS RSS warning: process RSS {} bytes exceeds soft limit {} bytes",
