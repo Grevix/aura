@@ -1,9 +1,7 @@
 # AURA — Adaptive Ultra-Low-Memory Runtime for AI
 
-[![Build](https://github.com/Grevix/aura/actions/workflows/ci_cd_pipeline.yml/badge.svg)](https://github.com/Grevix/aura/actions)
 [![Tests](https://img.shields.io/badge/tests-11%20passing-brightgreen)](https://github.com/Grevix/aura/actions)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/Grevix/aura)](https://github.com/Grevix/aura/releases)
 [![Rust](https://img.shields.io/badge/rust-1.80%2B-orange)](https://rustup.rs)
 
 **AURA is a hardware-aware memory-budget enforcement and inference orchestration engine for local LLMs on consumer hardware.**
