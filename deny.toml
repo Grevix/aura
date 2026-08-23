@@ -1,5 +1,17 @@
+# cargo-deny configuration for AURA
+#
+# Migration note (cargo-deny >= 0.15 / PR#611):
+#   - `unlicensed` has been removed; crates whose license cannot be confidently
+#     determined are now always denied by default.
+#   - `default` has been removed; all licenses not listed in `allow` are denied.
+#   - `deny` array has been removed; it added nothing since all non-allowed
+#     licenses were already denied.
+#
+# The policy intent is PRESERVED:
+#   Only Apache-2.0, MIT, BSD, MPL-2.0, Unicode-DFS-2016, and 0BSD are allowed.
+#   Every unlicensed crate is an error (cargo-deny enforces this unconditionally).
+
 [licenses]
-unlicensed = "deny"
 allow = [
     "MIT",
     "Apache-2.0",
@@ -8,6 +20,6 @@ allow = [
     "BSD-3-Clause",
     "MPL-2.0",
     "Unicode-DFS-2016",
-    "0BSD"
+    "0BSD",
 ]
 confidence-threshold = 0.8

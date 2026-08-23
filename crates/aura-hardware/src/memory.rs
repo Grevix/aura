@@ -50,6 +50,7 @@ pub fn get_process_page_faults(pid: u32) -> (u64, u64) {
 
     #[cfg(not(windows))]
     {
+        let _ = pid; // pid is not used on non-Windows: getrusage(RUSAGE_SELF) measures the current process
         let mut rusage: libc::rusage = unsafe { std::mem::zeroed() };
         if unsafe { libc::getrusage(libc::RUSAGE_SELF, &mut rusage) } == 0 {
             return (rusage.ru_majflt as u64, rusage.ru_minflt as u64);
