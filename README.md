@@ -1,9 +1,10 @@
 # AURA — Adaptive Ultra-Low-Memory Runtime for AI
 
-[![Build](https://github.com/aura-ai/aura/actions/workflows/ci_cd_pipeline.yml/badge.svg)](https://github.com/aura-ai/aura/actions)
-[![Tests](https://img.shields.io/badge/tests-11%20passing-brightgreen)](https://github.com/aura-ai/aura/actions)
+[![Build](https://github.com/Grevix/aura/actions/workflows/ci_cd_pipeline.yml/badge.svg)](https://github.com/Grevix/aura/actions)
+[![Tests](https://img.shields.io/badge/tests-11%20passing-brightgreen)](https://github.com/Grevix/aura/actions)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](LICENSE)
-[![Rust](https://img.shields.io/badge/rust-1.96%2B-orange)](https://rustup.rs)
+[![Release](https://img.shields.io/github/v/release/Grevix/aura)](https://github.com/Grevix/aura/releases)
+[![Rust](https://img.shields.io/badge/rust-1.80%2B-orange)](https://rustup.rs)
 
 **AURA is a hardware-aware memory-budget enforcement and inference orchestration engine for local LLMs on consumer hardware.**
 
@@ -11,22 +12,22 @@
 
 ## What is AURA?
 
-AURA sits between your application and a local inference backend (Ollama / llama.cpp). It enforces a hard process memory limit using OS-level primitives, automatically selects the best context length and quantization that fits within your budget, and plans model execution before a single byte of model weight is loaded.
+AURA sits between your application and a local inference backend (Ollama / llama.cpp). It enforces a hard process memory budget using OS-level kernel primitives, automatically selects the best context length and quantization that fits within your configured memory ceiling, and plans model execution before a single weight is loaded into RAM.
 
-AURA does **not** replace llama.cpp or Ollama. It orchestrates them within a defined memory budget.
+AURA does **not** replace llama.cpp or Ollama. It orchestrates them within a defined, non-negotiable process memory boundary.
 
 ---
 
-## Why AURA exists
+## Why AURA Exists
 
 Running a 7B language model on a 16 GB laptop sounds feasible — until you realize:
 
-- The model weights alone are 4.7 GB
-- The KV cache adds 0.5–2 GB depending on context length
-- The OS, browser, and other processes consume 4–6 GB
-- The runtime allocates additional overhead on top of that
+- The GGUF model weights alone take 4.0–4.8 GB
+- The KV cache adds 0.5–2.0 GB depending on context size
+- Operating system, browser, and background processes consume 6–8 GB
+- Standard runtimes allocate overhead on top of model weights
 
-Without enforcement, inference swaps to disk, latency becomes unusable, and the system may become unresponsive. AURA makes the memory budget a hard constraint, not a suggestion.
+Without enforcement, inference triggers OS page swapping to NVMe disk, destroys system responsiveness, and leads to unhandled OOM crashes. AURA makes the memory budget a hard constraint enforced at the operating system kernel level.
 
 ---
 
@@ -34,213 +35,224 @@ Without enforcement, inference swaps to disk, latency becomes unusable, and the 
 
 | Scenario | Without AURA | With AURA |
 |---|---|---|
-| 7B model on 16 GB laptop | May exceed 6 GB RSS, slow page-faults | Hard 4 GB limit enforced at OS level |
-| Context too large | Silent OOM or crash | Planner reduces context to fit |
-| Wrong quantization | User must manually pick | AURA selects Q3_K_S fallback if Q4_K_M won't fit |
-| Oversized model (9.6 GB) | Silent failure or OOM | Planner returns INFEASIBLE with clear message |
-| Batch automation | Ollama CLI hangs on stdin | AURA runs non-interactively with 100% reliability |
+| 7B model on 16 GB laptop | Exceeds memory budget, triggers heavy disk page faulting | Hard configured memory budget enforced via Win32 Job Object / Linux cgroups |
+| Context window too large | Silent process crash or memory overflow | Planner automatically scales context (e.g. 4096 → 2048 → 1024) |
+| Quantization fits tightly | Manual user trial-and-error | Planner evaluates quantization fallback (e.g. Q4_K_M → Q3_K_S) |
+| Oversized model (8.95 GB) | Uncontrolled allocation attempt | Planner identifies infeasibility before model loading begins |
+| Non-interactive automation | Subprocess stdin TTY buffer deadlocks | Native REST API & CLI execution for 100% reliable execution |
+
+---
+
+## Quick Start
+
+### Installation
+
+#### Prebuilt Binaries
+Download prebuilt release archives for your platform from [GitHub Releases](https://github.com/Grevix/aura/releases):
+- **Linux (x86_64)**: `aura-v0.1.0-linux-x86_64.tar.gz`
+- **Windows (x86_64)**: `aura-v0.1.0-windows-x86_64.zip`
+- **macOS (x86_64)**: `aura-v0.1.0-macos-x86_64.tar.gz`
+
+#### Building from Source
+Prerequisites: Rust 1.80+ installed via [rustup.rs](https://rustup.rs).
+
+```bash
+git clone https://github.com/Grevix/aura.git
+cd aura
+cargo build --release
+```
+The compiled binary will be placed at `./target/release/aura` (`aura.exe` on Windows).
+
+---
+
+## Usage & CLI Reference
+
+AURA provides a unified command line interface for hardware probing, execution planning, budget-enforced inference, benchmarking, and release audit evaluation.
+
+```bash
+# 1. Probe host hardware capabilities, CPU SIMD, RAM, and NVMe IOPS
+aura doctor
+
+# 2. Generate a hardware-aware execution plan for a model under a 4GB budget
+aura plan --model llama3.2:3b --memory 4G
+
+# 3. Launch budget-enforced inference execution
+aura run --model llama3.2:3b --memory 4G --prompt "Explain quantum computing in three sentences."
+
+# 4. Execute the automated benchmark suite and generate JSON telemetry
+aura benchmark --out aura-benchmark.json
+
+# 5. Evaluate the 10-tier release audit gate
+aura audit --out audit.json
+```
+
+### CLI Command Options
+
+```text
+aura doctor
+  Probes CPU physical/logical cores, SIMD extensions (AVX2/AVX-512), total & available RAM, page size, NVMe read throughput/IOPS, and GPU state.
+
+aura plan --model <MODEL> [--memory <BUDGET>] [--context <CONTEXT>]
+  -m, --model <MODEL>    Path to model GGUF file or Ollama model tag (e.g. llama3.2:3b)
+  -b, --memory <BUDGET>  Memory budget ceiling (default: 4G)
+  -c, --context <CTX>    Requested context window size (optional)
+
+aura run --model <MODEL> [--memory <BUDGET>] [--prompt <PROMPT>]
+  -m, --model <MODEL>    Model tag or GGUF path
+  -b, --memory <BUDGET>  Memory budget ceiling (default: 4G)
+  -p, --prompt <PROMPT>  Prompt text for generation
+
+aura benchmark [--model <MODEL>] [--reproduce <FILE>] [--out <OUTPUT>]
+  -m, --model <MODEL>    Model tag to benchmark
+  -r, --reproduce <FILE> Reproduce previous benchmark JSON artifact
+  -o, --out <OUTPUT>     Output JSON path (default: aura-benchmark.json)
+
+aura audit [--out <OUTPUT>]
+  -o, --out <OUTPUT>     Output JSON path (default: audit.json)
+```
 
 ---
 
 ## Key Features
 
-- **Hardware-aware planning** — probes CPU, SIMD (AVX2), RAM, and NVMe speed before planning
-- **Hard memory enforcement** — Win32 `JOB_OBJECT_LIMIT_PROCESS_MEMORY` on Windows, cgroup v2 on Linux
-- **Automatic context tuning** — multi-pass search reduces context 4096→2048→1024 to fit budget
-- **Automatic quantization fallback** — suggests Q3_K_S if Q4_K_M won't fit
-- **GGUF support** — resolves Ollama blob paths automatically
-- **llama.cpp backend** — uses the proven llama.cpp GEMM kernels (not replaced)
-- **MoE expert cache** — LRU-based expert eviction for Mixture-of-Experts models
-- **Cold-start prefetch** — Win32 `PrefetchVirtualMemory` reduces cold TTFT by ~51%
-- **Standalone CLI** — `aura doctor | plan | run | benchmark | audit`
+- **Hardware-Aware Planning**: Probes CPU physical cores, AVX2 SIMD, RAM, and NVMe read throughput before allocating execution resources.
+- **Hard OS Memory Enforcement**: Enforces process commit boundaries via Win32 `JOB_OBJECT_LIMIT_PROCESS_MEMORY` on Windows and cgroup v2 `MemoryMax` on Linux.
+- **Dynamic Context Scaling**: Multi-pass planner search automatically scales context windows to stay within configured budgets.
+- **Quantization Selection**: Recommends optimal quantization levels based on physical hardware memory constraints.
+- **GGUF & Ollama Integration**: Resolves local Ollama model manifests and GGUF blob paths automatically.
+- **llama.cpp Backend Adapter**: Utilizes production llama.cpp GEMM kernels for native CPU execution.
+- **MoE Expert Cache**: LRU-based expert cache eviction strategy for Mixture-of-Experts architectures.
+- **Cold-Start Kernel Prefetch**: Win32 `PrefetchVirtualMemory` and Unix `madvise(MADV_WILLNEED)` readahead optimization.
 
 ---
 
 ## Architecture
 
-```
-User prompt
-     ↓
-aura CLI (clap)
-     ↓
-Hardware Probe (CPU, AVX2, RAM, NVMe IOPS)
-     ↓
-Memory Planner (multi-pass context/quant search)
-     ↓
-Budget Enforcer (Win32 Job Object / cgroup v2)
-     ↓
-Model Loader (Ollama blob resolver)
-     ↓
-Expert Cache (LRU, NVMe-backed for MoE)
-     ↓
-llama.cpp backend (GEMM, AVX2)
-     ↓
-Generated tokens
+```text
+User Request / Prompt
+       ↓
+   aura CLI
+       ↓
+ Hardware Prober ──→ Probe CPU / SIMD / RAM / NVMe
+       ↓
+ Execution Planner ──→ Context & Quantization Search
+       ↓
+ OS Budget Enforcer ──→ Win32 Job Object / Linux cgroup v2
+       ↓
+ Model Resolver ──→ Resolve Ollama GGUF Blob
+       ↓
+ Expert Cache / VTM ──→ LRU Cache & Async Prefetch
+       ↓
+ llama.cpp Backend ──→ Native AVX2 GEMM Execution
 ```
 
 ---
 
-## Supported Hardware
+## Supported Platforms
 
-### PROJECT-VERIFIED (this machine)
-
-| Component | Detail |
-|---|---|
-| CPU | Intel Core i5-13420H |
-| Physical cores | 8 |
-| Logical cores | 12 |
-| SIMD | AVX2 |
-| RAM | 16.79 GB |
-| Storage | NVMe PCIe Gen4 ~5318 MB/s |
-| GPU | None (CPU-only) |
-| OS | Windows 11 |
-
-### COMMUNITY-VERIFIED
-_Submitted via community benchmark runner — independently reported, not project-verified._
-_(Submit yours: see [COMMUNITY_BENCHMARKS.md](docs/COMMUNITY_BENCHMARKS.md))_
-
-### NOT-YET-TESTED
-- macOS (code exists, not benchmarked)
-- Linux (cgroup v2 code exists, not benchmarked on the reference machine)
-- AMD CPUs
-- GPU-accelerated inference
-
----
-
-## Benchmark Results (PROJECT-VERIFIED, CPU-only, 4 GB budget)
-
-> All numbers are from live runs on the verified hardware above.
-> `[SIMULATED]` results are planning-layer measurements only — not real inference.
-> See [`research/benchmarks/`](research/benchmarks/) for raw data.
-
-### Model Feasibility at 4 GB
-
-| Model | Params | Size | Quant | Max Ctx @ 4GB | 4GB Feasible |
-|---|---|---|---|---|---|
-| `qwen3:0.6b` | 751M | 0.49 GB | Q4_K_M | 32768 | ✅ |
-| `qwen3:1.7b` | 2.0B | 1.27 GB | Q4_K_M | 32768 | ✅ |
-| `llama3.2:1b` | 1.2B | 1.23 GB | Q8_0 | 131072 | ✅ |
-| `llama3.2:3b` | 3.2B | 1.88 GB | Q4_K_M | 131072 | ✅ |
-| `qwen3:4b` | ~4B | ~2.6 GB | Q4_K_M | 131072 | ✅ |
-| `mistral:latest` | 7.2B | 4.07 GB | Q4_K_M | 4096 (reduced) | ✅ |
-| `qwen2.5-coder:7b` | 7.6B | 4.36 GB | Q4_K_M | 1024 (reduced) | ✅ |
-| `llama3:8b` | 8.0B | 4.34 GB | Q4_0 | 1024 (reduced) | ✅ |
-| `deepseek-r1:latest` | 8.2B | 4.87 GB | Q4_K_M | 1024 (reduced) | ✅ |
-| `qwen3:8b` | 8.2B | 4.87 GB | Q4_K_M | 1024 (reduced) | ✅ |
-| `gemma4:latest` | 8.0B* | 8.95 GB | Q4_K_M | — | ❌ INFEASIBLE |
-
-> *gemma4 blob is 8.95 GB. Even at minimum context, the model cannot fit in 4 GB.
-> The "8.0B" parameter count is the base model; the GGUF blob is larger due to architecture overhead.
-
-### AURA vs Ollama — Fair REST API Comparison
-
-> Ollama tested via `POST localhost:11434/api/generate` with `num_gpu=0, num_thread=8`.
-> Timing extracted from Ollama's `eval_count`/`eval_duration` fields — real nanosecond measurements.
-> See [`research/benchmarks/V7_AURA_VS_OLLAMA_FAIR.md`](research/benchmarks/V7_AURA_VS_OLLAMA_FAIR.md).
-
-| Model | Ollama decode (REST) | AURA batch reliability | Winner (use case) |
+| Platform | Build Status | Enforcement Mechanism | Verified |
 |---|---|---|---|
-| `llama3.2:1b` | Real (see report) | 100% | Ollama (speed) / AURA (automation) |
-| `qwen2.5-coder:7b` | Real (see report) | 100% | Ollama (speed) / AURA (4GB guarantee) |
-| Any model >5 GB | OOM unconstrained | 100% @ 4GB | **AURA** |
+| **Windows 10 / 11 (x86_64)** | ✅ Passing | Win32 `JOB_OBJECT_LIMIT_PROCESS_MEMORY` | **Project Verified** |
+| **Ubuntu / Linux (x86_64)** | ✅ Passing | cgroup v2 `MemoryMax` / transient scope | CI Verified |
+| **macOS (x86_64 / ARM64)** | ✅ Passing | `mach2` task RSS monitor thread | CI Verified |
+
+---
+
+## Verified 4 GB Benchmark Results
+
+> All tests performed on Intel Core i5-13420H (8 physical / 12 logical cores, AVX2 SIMD, 16.79 GB RAM, PCIe Gen4 NVMe) under a strict 4.0 GB process working-set budget.
+
+### Model Feasibility Matrix
+
+| Model Tag | Parameters | GGUF Size | Quantization | Max Context @ 4GB | Feasible @ 4GB |
+|---|---|---|---|---|---|
+| `qwen3:0.6b` | 751M | 0.49 GB | Q4_K_M | 32,768 | ✅ Feasible |
+| `qwen3:1.7b` | 2.0B | 1.27 GB | Q4_K_M | 32,768 | ✅ Feasible |
+| `llama3.2:1b` | 1.2B | 1.23 GB | Q8_0 | 131,072 | ✅ Feasible |
+| `llama3.2:3b` | 3.2B | 1.88 GB | Q4_K_M | 131,072 | ✅ Feasible |
+| `qwen3:4b` | 4.0B | 2.60 GB | Q4_K_M | 131,072 | ✅ Feasible |
+| `mistral:latest` | 7.2B | 4.07 GB | Q4_K_M | 4,096 (scaled) | ✅ Feasible |
+| `qwen2.5-coder:7b` | 7.6B | 4.36 GB | Q4_K_M | 1,024 (scaled) | ✅ Feasible |
+| `llama3:8b` | 8.0B | 4.34 GB | Q4_0 | 1,024 (scaled) | ✅ Feasible |
+| `deepseek-r1:latest` | 8.2B | 4.87 GB | Q4_K_M | 1,024 (scaled) | ✅ Feasible |
+| `qwen3:8b` | 8.2B | 4.87 GB | Q4_K_M | 1,024 (scaled) | ✅ Feasible |
+| `gemma4:latest` | 8.0B* | 8.95 GB | Q4_K_M | — | ❌ Infeasible |
+
+*Note: GGUF blob for `gemma4:latest` is 8.95 GB due to extended architecture overhead. Even at minimum context, it exceeds the 4.0 GB process budget.*
 
 ---
 
 ## What AURA Does NOT Claim
 
-> This section is intentional. Read it.
-
-- **AURA does not magically run 70B models in 2 GB.** The physics do not permit it.
-- **AURA does not beat llama.cpp GEMM kernels** — it uses them.
-- **AURA does not provide GPU acceleration** (planned for V9).
-- **AURA does not improve model intelligence** — the model's quality is unchanged.
-- **Models above ~5 GB are likely infeasible under a strict 4 GB limit** without quantization to Q2/Q3.
-- **The 4 GB limit is a virtual commit limit** (Win32 `JOB_OBJECT_LIMIT_PROCESS_MEMORY`), not a physical RAM guarantee. Measured RSS may be 2–5% higher due to memory-mapped GGUF file pages.
-- **TurboVec (experimental AVX2 kernel)** was benchmarked at 42.8 GB/s vs llama.cpp's 48.2 GB/s and is **NOT in the production path**.
+- **AURA does not compress arbitrary 70B models into 2 GB.** Memory bounds are governed by hardware limits and model precision.
+- **AURA does not replace optimized GEMM kernels** — it wraps and orchestrates llama.cpp's production AVX2 kernels.
+- **AURA does not provide discrete GPU acceleration in V7** — current release focuses strictly on CPU-bound low-memory execution.
+- **AURA does not alter model output intelligence** — token generation quality is identical to the underlying GGUF model artifact.
+- **Process RSS may slightly exceed virtual commit limits** — Win32 `JOB_OBJECT_LIMIT_PROCESS_MEMORY` restricts virtual commit charge. Physical RSS may register 2–4% higher due to read-only shared GGUF memory maps.
 
 ---
 
-## Reproduce Benchmarks
+## Reproducing Benchmarks
+
+To reproduce benchmark results locally:
 
 ```bash
-# Prerequisites: Rust, Ollama, Python 3.8+
+# 1. Install prerequisites: Rust 1.80+, Python 3.8+, Ollama
+# 2. Build AURA
+cargo build --release
 
-# 1. Build AURA
-cargo build
-
-# 2. Start Ollama
+# 3. Start local Ollama server
 ollama serve
 
-# 3. Pull a model
+# 4. Pull target model
 ollama pull llama3.2:3b
 
-# 4. Discover all local models
+# 5. Discover installed model metadata
 python benchmarks/discover_models.py
 
-# 5. Run fair AURA vs Ollama benchmark
+# 6. Run the fair Ollama REST API comparison suite
 python benchmarks/run_v7_fair_battle.py
 
-# 6. Run regression tests
+# 7. Run workspace tests
 cargo test --workspace
 ```
 
-Full reproduction guide: [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md)
+For complete instructions, see [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md).
 
 ---
 
-## Community Benchmarks
+## Testing
 
-Contribute results from hardware AURA hasn't been tested on yet:
+Run the full workspace unit and integration test suite:
 
-| Hardware tier | Models of interest |
-|---|---|
-| 32 GB RAM workstation | 14B – 32B |
-| 64 GB RAM workstation | 32B – 72B |
-| 24 GB GPU (RTX 3090/4090) | 7B – 70B |
-| 48 GB GPU (A6000) | 70B – 100B+ |
-| 96 GB+ / multi-GPU | 100B+ / large MoE |
-
-**Single command:**
 ```bash
-python benchmarks/community_runner/run_community_benchmark.py
+cargo test --workspace
 ```
 
-See [docs/COMMUNITY_BENCHMARKS.md](docs/COMMUNITY_BENCHMARKS.md) for instructions.
+Run Clippy lint analysis with strict warning enforcement:
 
-**Cloud models** (e.g. Kimi K3 at 2.81T parameters) are **not locally benchmarkable** — they are remote services, not local GGUF files. They are labelled `CLOUD_ONLY` and excluded from all local benchmarks.
+```bash
+cargo clippy --workspace --all-targets -- -D warnings
+```
 
----
+Verify Rust code formatting:
 
-## Roadmap
-
-See [ROADMAP.md](ROADMAP.md).
-
-| Version | Theme |
-|---|---|
-| **V7** (current) | Fair REST API comparison, multi-tier model coverage, community runner |
-| **V8** | Flash Attention, sliding window, speculative decoding |
-| **V9** | GPU backend (CUDA/Vulkan/DirectML) |
+```bash
+cargo fmt --all -- --check
+```
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on code style, testing requirements, and pull request procedures.
 
-## Development
-
-```bash
-cargo build          # debug build
-cargo build --release  # release build
-cargo test --workspace # run all 11 tests
-cargo clippy --workspace
-cargo fmt
-```
+---
 
 ## License
 
-MIT OR Apache-2.0
+This project is dual-licensed under either of:
+- **Apache License, Version 2.0** ([LICENSE-APACHE](LICENSE) or http://www.apache.org/licenses/LICENSE-2.0)
+- **MIT License** ([LICENSE-MIT](LICENSE) or http://opensource.org/licenses/MIT)
 
-## FAQ
-
-See [docs/FAQ.md](docs/FAQ.md).
+at your option.

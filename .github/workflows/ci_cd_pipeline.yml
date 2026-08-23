@@ -113,33 +113,54 @@ jobs:
           path: research/benchmarks/*.json
 
   # ---------------------------------------------------------------------------
-  # STAGE 4: Release Asset Publication (Release Tags Only)
+  # STAGE 4: Multi-Platform Release Asset Publication (Release Tags Only)
   # ---------------------------------------------------------------------------
   publish_release:
-    name: Publish Release Assets & Audit Documents
-    needs: [self_hosted_benchmark_and_audit]
+    name: Publish Release Assets & Audit Documents (${{ matrix.target }})
+    needs: [quality_and_unit_tests, security_and_licenses]
     if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact_name: aura-linux-x86_64.tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: aura-windows-x86_64.zip
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: aura-macos-x86_64.tar.gz
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Download Benchmark JSON Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: aura-benchmark-raw-json
-          path: release_artifacts/
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Build Release Binary
         run: cargo build --release --workspace
+
+      - name: Package Artifact (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          tar -czvf ${{ matrix.artifact_name }} -C target/release aura SHA256SUMS RELEASE_NOTES.md
+
+      - name: Package Artifact (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Compress-Archive -Path target/release/aura.exe, SHA256SUMS, RELEASE_NOTES.md -DestinationPath ${{ matrix.artifact_name }}
 
       - name: Create Release Package
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            target/release/aura
-            release_artifacts/*.json
+            ${{ matrix.artifact_name }}
+            SHA256SUMS
+            RELEASE_NOTES.md
             research/audits/V7_RELEASE_AUDIT.md
             research/audits/V7_PRE_RELEASE_AUDIT.md
+          body_path: RELEASE_NOTES.md
           draft: false
           prerelease: false
