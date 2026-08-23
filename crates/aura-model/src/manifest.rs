@@ -6,7 +6,14 @@ pub fn load_manifest(path: &Path) -> Result<ModelManifest> {
     let path_str = path.to_string_lossy();
 
     // Check if input is an Ollama model identifier (e.g. "qwen2.5-coder:7b")
-    if !path.exists() && (path_str.contains(':') || path_str.contains("qwen") || path_str.contains("llama") || path_str.contains("deepseek") || path_str.contains("mistral") || path_str.contains("gemma")) {
+    if !path.exists()
+        && (path_str.contains(':')
+            || path_str.contains("qwen")
+            || path_str.contains("llama")
+            || path_str.contains("deepseek")
+            || path_str.contains("mistral")
+            || path_str.contains("gemma"))
+    {
         if let Ok(resolved_path) = crate::ollama::resolve_ollama_model_path(&path_str) {
             let mut manifest = crate::gguf::parse_gguf_manifest(&resolved_path)?;
             manifest.name = path_str.to_string();

@@ -62,7 +62,10 @@ pub fn resolve_ollama_model_path(model_name: &str) -> Result<PathBuf> {
                 .join(hash_clean);
 
             if blob_path.exists() {
-                info!("Resolved Ollama model '{}' -> GGUF Blob: {:?}", model_name, blob_path);
+                info!(
+                    "Resolved Ollama model '{}' -> GGUF Blob: {:?}",
+                    model_name, blob_path
+                );
                 return Ok(blob_path);
             }
         }

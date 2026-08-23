@@ -6,7 +6,10 @@ use std::path::Path;
 use tracing::info;
 
 pub fn reproduce_benchmark(report_path: &Path) -> Result<BenchmarkReport> {
-    info!("Loading benchmark report for reproduction: {:?}", report_path);
+    info!(
+        "Loading benchmark report for reproduction: {:?}",
+        report_path
+    );
     let mut file = File::open(report_path)?;
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
@@ -16,7 +19,10 @@ pub fn reproduce_benchmark(report_path: &Path) -> Result<BenchmarkReport> {
 
     info!("Reproducing run ID: {}", report.run_id);
     info!("Target Model: {}", report.model.name);
-    info!("Original Decode Speed: {:.2} tok/s", report.phases.cold_start.decode_tok_per_sec);
+    info!(
+        "Original Decode Speed: {:.2} tok/s",
+        report.phases.cold_start.decode_tok_per_sec
+    );
 
     Ok(report)
 }

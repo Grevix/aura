@@ -16,5 +16,10 @@ pub struct BackendOutput {
 
 pub trait BackendAdapter {
     fn name(&self) -> &str;
-    fn execute(&self, model_path: &str, prompt: &str, plan: &ExecutionPlan) -> Result<BackendOutput>;
+    fn execute(
+        &self,
+        model_path: &str,
+        prompt: &str,
+        plan: &ExecutionPlan,
+    ) -> Result<BackendOutput>;
 }

@@ -22,8 +22,12 @@ pub fn detect_memory() -> MemoryProfile {
 pub fn get_process_page_faults(pid: u32) -> (u64, u64) {
     #[cfg(windows)]
     unsafe {
-        use windows_sys::Win32::System::ProcessStatus::{GetProcessMemoryInfo, PROCESS_MEMORY_COUNTERS};
-        use windows_sys::Win32::System::Threading::{OpenProcess, PROCESS_QUERY_INFORMATION, PROCESS_VM_READ};
+        use windows_sys::Win32::System::ProcessStatus::{
+            GetProcessMemoryInfo, PROCESS_MEMORY_COUNTERS,
+        };
+        use windows_sys::Win32::System::Threading::{
+            OpenProcess, PROCESS_QUERY_INFORMATION, PROCESS_VM_READ,
+        };
 
         let handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, 0, pid);
         if !handle.is_null() {
@@ -35,7 +39,10 @@ pub fn get_process_page_faults(pid: u32) -> (u64, u64) {
             ) != 0
             {
                 windows_sys::Win32::Foundation::CloseHandle(handle);
-                return (counters.PageFaultCount as u64, counters.WorkingSetSize as u64);
+                return (
+                    counters.PageFaultCount as u64,
+                    counters.WorkingSetSize as u64,
+                );
             }
             windows_sys::Win32::Foundation::CloseHandle(handle);
         }

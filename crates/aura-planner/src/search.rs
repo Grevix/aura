@@ -11,25 +11,30 @@ pub fn generate_execution_plan(
     // V5 Small-Model Fast-Path Optimization:
     // For small models (<= 3.5B parameters or <= 2.5 GB weights) under a 4GB+ RAM budget,
     // skip the multi-pass search loop and execute the sub-millisecond fast-path.
-    if manifest.total_parameters <= 3_500_000_000 || manifest.required_file_bytes <= 2_500_000_000 {
-        if budget_bytes >= 4_000_000_000 {
-            let target_context = requested_context.unwrap_or(4096).min(manifest.context_length_max);
-            let estimate = estimate_memory_footprint(manifest, target_context, &manifest.quantization_type);
-            let enforcement = determine_enforcement_mechanism(hw);
-            let recommended_threads = hw.cpu.physical_cores.max(1).min(8);
+    if (manifest.total_parameters <= 3_500_000_000 || manifest.required_file_bytes <= 2_500_000_000)
+        && budget_bytes >= 4_000_000_000
+    {
+        let target_context = requested_context
+            .unwrap_or(4096)
+            .min(manifest.context_length_max);
+        let estimate =
+            estimate_memory_footprint(manifest, target_context, &manifest.quantization_type);
+        let enforcement = determine_enforcement_mechanism(hw);
+        let recommended_threads = hw.cpu.physical_cores.clamp(1, 8);
 
-            // V7: Physics-based decode estimate replaces the previous hardcoded 35.0 tok/s.
-            // bytes_per_token = weight_bytes / total_parameters (GEMV weight BW per token).
-            // effective_bw ~45 GB/s for AVX2 DRAM on i5-13420H. Clamped [4.0, 80.0].
-            let bytes_per_token = if manifest.total_parameters > 0 {
-                manifest.required_file_bytes as f64 / manifest.total_parameters as f64
-            } else {
-                4.0
-            };
-            let effective_bw_bytes_sec: f64 = 45_000_000_000.0;
-            let physics_tok_per_sec = (effective_bw_bytes_sec / bytes_per_token.max(0.1)).clamp(4.0, 80.0);
+        // V7: Physics-based decode estimate replaces the previous hardcoded 35.0 tok/s.
+        // bytes_per_token = weight_bytes / total_parameters (GEMV weight BW per token).
+        // effective_bw ~45 GB/s for AVX2 DRAM on i5-13420H. Clamped [4.0, 80.0].
+        let bytes_per_token = if manifest.total_parameters > 0 {
+            manifest.required_file_bytes as f64 / manifest.total_parameters as f64
+        } else {
+            4.0
+        };
+        let effective_bw_bytes_sec: f64 = 45_000_000_000.0;
+        let physics_tok_per_sec =
+            (effective_bw_bytes_sec / bytes_per_token.max(0.1)).clamp(4.0, 80.0);
 
-            return ExecutionPlan {
+        return ExecutionPlan {
                 model_name: manifest.name.clone(),
                 memory_budget_bytes: budget_bytes,
                 estimated_peak_rss_bytes: estimate.total_peak_rss_bytes,
@@ -56,9 +61,7 @@ pub fn generate_execution_plan(
                     format!("--threads {}", recommended_threads),
                 ],
             };
-        }
     }
-
 
     let mut target_context = requested_context
         .unwrap_or(4096)
@@ -106,7 +109,7 @@ pub fn generate_execution_plan(
         )
     };
 
-    let recommended_threads = hw.cpu.physical_cores.max(1).min(8);
+    let recommended_threads = hw.cpu.physical_cores.clamp(1, 8);
 
     // Storage bandwidth physics calculation
     let storage_bw_bytes_sec = (hw.storage.seq_read_mbps * 1e6).max(1e8);

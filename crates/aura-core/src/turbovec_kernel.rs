@@ -17,8 +17,8 @@ pub static TURBOVEC_NIBBLE_LOOKUPS: AtomicU64 = AtomicU64::new(0);
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
 pub struct BlockQ4_0 {
-    pub d: F16,             // 16-bit FP scale factor
-    pub qs: [u8; 16],       // 32 packed 4-bit nibbles (low nibble = elem i, high nibble = elem i+16)
+    pub d: F16,       // 16-bit FP scale factor
+    pub qs: [u8; 16], // 32 packed 4-bit nibbles (low nibble = elem i, high nibble = elem i+16)
 }
 
 /// Floating-point 16 conversion helper
@@ -66,7 +66,7 @@ pub fn gemv_q4_0_reference(
     y: &mut [f32],
 ) {
     let blocks_per_row = cols / 32;
-    for r in 0..rows {
+    for (r, y_out) in y.iter_mut().enumerate().take(rows) {
         let mut sum = 0.0f32;
         let row_offset = r * blocks_per_row;
         for b in 0..blocks_per_row {
@@ -83,7 +83,7 @@ pub fn gemv_q4_0_reference(
                 sum += (q1 as f32) * d * x_slice[i + 16];
             }
         }
-        y[r] = sum;
+        *y_out = sum;
     }
 }
 
@@ -101,7 +101,7 @@ pub fn gemv_q4_0_turbovec_nibble(
     TURBOVEC_KERNEL_CALLS.fetch_add(1, Ordering::Relaxed);
     let blocks_per_row = cols / 32;
 
-    for r in 0..rows {
+    for (r, y_out) in y.iter_mut().enumerate().take(rows) {
         let mut row_acc = 0.0f32;
         let row_offset = r * blocks_per_row;
 
@@ -141,7 +141,7 @@ pub fn gemv_q4_0_turbovec_nibble(
             row_acc += d * block_sum;
             TURBOVEC_NIBBLE_LOOKUPS.fetch_add(16, Ordering::Relaxed);
         }
-        y[r] = row_acc;
+        *y_out = row_acc;
     }
 }
 
@@ -155,8 +155,16 @@ pub struct KernelErrorMetrics {
 }
 
 /// Evaluates numerical correctness of optimized GEMV kernel against GGML reference
-pub fn verify_kernel_correctness(reference: &[f32], candidate: &[f32], tolerance: f32) -> KernelErrorMetrics {
-    assert_eq!(reference.len(), candidate.len(), "Vector dimension mismatch!");
+pub fn verify_kernel_correctness(
+    reference: &[f32],
+    candidate: &[f32],
+    tolerance: f32,
+) -> KernelErrorMetrics {
+    assert_eq!(
+        reference.len(),
+        candidate.len(),
+        "Vector dimension mismatch!"
+    );
 
     let mut max_abs_err = 0.0f32;
     let mut sum_abs_err = 0.0f32;

@@ -5,9 +5,8 @@ use tracing::info;
 use windows_sys::Win32::Foundation::CloseHandle;
 #[cfg(windows)]
 use windows_sys::Win32::System::JobObjects::{
-    AssignProcessToJobObject, SetInformationJobObject,
-    JobObjectExtendedLimitInformation, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
-    JOB_OBJECT_LIMIT_PROCESS_MEMORY,
+    AssignProcessToJobObject, JobObjectExtendedLimitInformation, SetInformationJobObject,
+    JOBOBJECT_EXTENDED_LIMIT_INFORMATION, JOB_OBJECT_LIMIT_PROCESS_MEMORY,
 };
 
 #[cfg(windows)]
@@ -26,7 +25,9 @@ pub fn apply_windows_job_object(pid: u32, budget_bytes: u64) -> Result<()> {
 
     #[cfg(windows)]
     unsafe {
-        use windows_sys::Win32::System::Threading::{OpenProcess, PROCESS_SET_QUOTA, PROCESS_TERMINATE};
+        use windows_sys::Win32::System::Threading::{
+            OpenProcess, PROCESS_SET_QUOTA, PROCESS_TERMINATE,
+        };
 
         let job = CreateJobObjectW(std::ptr::null(), std::ptr::null());
         if job.is_null() {
@@ -61,7 +62,10 @@ pub fn apply_windows_job_object(pid: u32, budget_bytes: u64) -> Result<()> {
         } else {
             let _ = AssignProcessToJobObject(job, process_handle);
             CloseHandle(process_handle);
-            info!("Assigned PID={} to Win32 Job Object memory limit scope.", pid);
+            info!(
+                "Assigned PID={} to Win32 Job Object memory limit scope.",
+                pid
+            );
         }
     }
 

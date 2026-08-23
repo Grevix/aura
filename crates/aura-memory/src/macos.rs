@@ -36,7 +36,10 @@ pub fn spawn_macos_rss_monitor(pid: u32, budget_bytes: u64) -> Result<()> {
                 if kr == libc::KERN_SUCCESS {
                     let rss = task_info.resident_size as u64;
                     if rss > soft_limit {
-                        warn!("macOS RSS warning: process RSS {} bytes exceeds soft limit {} bytes", rss, soft_limit);
+                        warn!(
+                            "macOS RSS warning: process RSS {} bytes exceeds soft limit {} bytes",
+                            rss, soft_limit
+                        );
                     }
                 }
             }

@@ -6,6 +6,7 @@ use std::process::Command;
 use std::time::{Duration, Instant};
 use tracing::{info, warn};
 
+#[derive(Default)]
 pub struct LlamaCppAdapter;
 
 impl LlamaCppAdapter {
@@ -45,8 +46,16 @@ impl BackendAdapter for LlamaCppAdapter {
         "llama.cpp"
     }
 
-    fn execute(&self, model_path: &str, prompt: &str, plan: &ExecutionPlan) -> Result<BackendOutput> {
-        info!("Launching llama.cpp backend adapter for model: {}", model_path);
+    fn execute(
+        &self,
+        model_path: &str,
+        prompt: &str,
+        plan: &ExecutionPlan,
+    ) -> Result<BackendOutput> {
+        info!(
+            "Launching llama.cpp backend adapter for model: {}",
+            model_path
+        );
 
         let resolved_model_path = if Path::new(model_path).exists() {
             PathBuf::from(model_path)
@@ -65,7 +74,7 @@ impl BackendAdapter for LlamaCppAdapter {
             if is_server {
                 // Spawn llama-server on localhost port 8089
                 let child = Command::new(&binary_path)
-                    .args(&[
+                    .args([
                         "-m",
                         resolved_model_path.to_str().unwrap_or(""),
                         "-c",
@@ -92,7 +101,8 @@ impl BackendAdapter for LlamaCppAdapter {
                         .build();
 
                     if let Ok(cli) = client {
-                        let res = cli.post("http://127.0.0.1:8089/completion")
+                        let res = cli
+                            .post("http://127.0.0.1:8089/completion")
                             .json(&payload)
                             .send();
 
@@ -100,7 +110,9 @@ impl BackendAdapter for LlamaCppAdapter {
 
                         if let Ok(resp) = res {
                             if let Ok(json_body) = resp.json::<serde_json::Value>() {
-                                if let Some(content) = json_body.get("content").and_then(|v| v.as_str()) {
+                                if let Some(content) =
+                                    json_body.get("content").and_then(|v| v.as_str())
+                                {
                                     let elapsed_sec = start.elapsed().as_secs_f64();
                                     let tok_count = content.split_whitespace().count().max(1);
                                     let decode_tok_sec = tok_count as f64 / elapsed_sec.max(0.1);
@@ -125,7 +137,7 @@ impl BackendAdapter for LlamaCppAdapter {
             } else {
                 // CLI mode
                 let output = Command::new(&binary_path)
-                    .args(&[
+                    .args([
                         "-m",
                         resolved_model_path.to_str().unwrap_or(""),
                         "-p",

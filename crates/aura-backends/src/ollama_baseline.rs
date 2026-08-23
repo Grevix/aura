@@ -94,9 +94,9 @@ impl OllamaBaselineRunner {
             )));
         }
 
-        let body: OllamaGenerateResponse = resp
-            .json()
-            .map_err(|e| AuraError::BackendError(format!("Failed to parse Ollama response: {}", e)))?;
+        let body: OllamaGenerateResponse = resp.json().map_err(|e| {
+            AuraError::BackendError(format!("Failed to parse Ollama response: {}", e))
+        })?;
 
         if !body.done {
             warn!("Ollama response marked done=false for model {}", model_name);
@@ -111,7 +111,9 @@ impl OllamaBaselineRunner {
             body.eval_count as f64 / ns_to_sec(body.eval_duration)
         } else {
             // Fallback: wall-clock estimate (less accurate)
-            warn!("eval_duration/eval_count missing from Ollama response; using wall-clock fallback");
+            warn!(
+                "eval_duration/eval_count missing from Ollama response; using wall-clock fallback"
+            );
             let approx_tokens = body.response.split_whitespace().count().max(1);
             approx_tokens as f64 / wall_elapsed.max(0.1)
         };

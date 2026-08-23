@@ -14,7 +14,10 @@ pub fn execute_benchmark(model_path: Option<&str>, reproduce_file: Option<&str>,
             Ok(report) => {
                 println!("✅ Reproduction Verified for Run ID: {}", report.run_id);
                 println!("Model          : {}", report.model.name);
-                println!("Reported Decode: {:.2} tok/s", report.phases.cold_start.decode_tok_per_sec);
+                println!(
+                    "Reported Decode: {:.2} tok/s",
+                    report.phases.cold_start.decode_tok_per_sec
+                );
                 println!("Enforcement    : {}", report.plan.enforcement_mechanism);
             }
             Err(e) => {
@@ -47,13 +50,7 @@ pub fn execute_benchmark(model_path: Option<&str>, reproduce_file: Option<&str>,
 
     let plan = generate_execution_plan(&hw, &manifest, 4_000_000_000, None);
 
-    let report = generate_benchmark_report(
-        hw,
-        manifest,
-        plan,
-        180.0,
-        14.5,
-    );
+    let report = generate_benchmark_report(hw, manifest, plan, 180.0, 14.5);
 
     let json_str = serde_json::to_string_pretty(&report).unwrap();
     if let Ok(mut f) = File::create(out_path) {
@@ -63,7 +60,13 @@ pub fn execute_benchmark(model_path: Option<&str>, reproduce_file: Option<&str>,
 
     println!("\n=== BENCHMARK SUMMARY ===");
     println!("Run ID         : {}", report.run_id);
-    println!("TTFT (Cold)    : {:.2} ms", report.phases.cold_start.ttft_ms);
-    println!("Decode tok/s   : {:.2}", report.phases.cold_start.decode_tok_per_sec);
+    println!(
+        "TTFT (Cold)    : {:.2} ms",
+        report.phases.cold_start.ttft_ms
+    );
+    println!(
+        "Decode tok/s   : {:.2}",
+        report.phases.cold_start.decode_tok_per_sec
+    );
     println!("Enforcement    : {}", report.plan.enforcement_mechanism);
 }

@@ -16,7 +16,10 @@ pub fn execute_audit(out_path: &str) {
 
     println!("\n=== AUDIT GATE DETAILED RESULTS ===");
     for gate in &report.gates {
-        println!("[{}] {:<30} : {} ({})", gate.gate_id, gate.name, gate.status, gate.details);
+        println!(
+            "[{}] {:<30} : {} ({})",
+            gate.gate_id, gate.name, gate.status, gate.details
+        );
     }
 
     if report.failed_gates == 0 {

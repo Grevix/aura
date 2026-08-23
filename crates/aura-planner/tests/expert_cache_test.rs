@@ -19,6 +19,9 @@ fn test_expert_cache_lru_behavior() {
     assert_eq!(hits3, 0);
     assert_eq!(misses3, 1);
 
-    println!("MoE Expert Cache Hit Rate: {:.2}%", cache.hit_rate() * 100.0);
+    println!(
+        "MoE Expert Cache Hit Rate: {:.2}%",
+        cache.hit_rate() * 100.0
+    );
     assert!(cache.hit_rate() > 0.40);
 }

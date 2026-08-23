@@ -8,10 +8,18 @@ use std::path::Path;
 fn parse_memory_budget(budget_str: &str) -> u64 {
     let lower = budget_str.trim().to_lowercase();
     if lower.ends_with('g') || lower.ends_with("gb") {
-        let num: f64 = lower.trim_end_matches("gb").trim_end_matches('g').parse().unwrap_or(4.0);
+        let num: f64 = lower
+            .trim_end_matches("gb")
+            .trim_end_matches('g')
+            .parse()
+            .unwrap_or(4.0);
         (num * 1e9) as u64
     } else if lower.ends_with('m') || lower.ends_with("mb") {
-        let num: f64 = lower.trim_end_matches("mb").trim_end_matches('m').parse().unwrap_or(4000.0);
+        let num: f64 = lower
+            .trim_end_matches("mb")
+            .trim_end_matches('m')
+            .parse()
+            .unwrap_or(4000.0);
         (num * 1e6) as u64
     } else {
         4_000_000_000
@@ -41,7 +49,9 @@ pub fn execute_run(model_path: &str, memory: &str, prompt: &str) {
     }
 
     let pid = std::process::id();
-    if let Err(e) = enforce_memory_budget(pid, plan.memory_budget_bytes, &plan.enforcement_mechanism) {
+    if let Err(e) =
+        enforce_memory_budget(pid, plan.memory_budget_bytes, &plan.enforcement_mechanism)
+    {
         eprintln!("⚠️ Memory enforcement warning: {}", e);
     }
 
@@ -55,7 +65,10 @@ pub fn execute_run(model_path: &str, memory: &str, prompt: &str) {
             println!("TTFT Latency   : {:.2} ms", output.ttft_ms);
             println!("Prefill Speed  : {:.2} tok/s", output.prompt_tok_per_sec);
             println!("Decode Speed   : {:.2} tok/s", output.decode_tok_per_sec);
-            println!("Peak RSS       : {:.2} GB", output.peak_rss_bytes as f64 / 1e9);
+            println!(
+                "Peak RSS       : {:.2} GB",
+                output.peak_rss_bytes as f64 / 1e9
+            );
             println!("Enforcement    : {}", plan.enforcement_mechanism);
         }
         Err(e) => {

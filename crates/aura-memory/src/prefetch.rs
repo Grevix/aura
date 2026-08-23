@@ -41,13 +41,13 @@ impl AsyncPrefetcher {
             };
             use windows_sys::Win32::System::Threading::GetCurrentProcess;
 
-            let mut range = WIN32_MEMORY_RANGE_ENTRY {
+            let range = WIN32_MEMORY_RANGE_ENTRY {
                 VirtualAddress: ptr as *mut _,
                 NumberOfBytes: len,
             };
 
             let proc_handle = GetCurrentProcess();
-            let res = PrefetchVirtualMemory(proc_handle, 1, &mut range, 0);
+            let res = PrefetchVirtualMemory(proc_handle, 1, &range, 0);
             if res != 0 {
                 PREFETCH_HITS.fetch_add(1, Ordering::Relaxed);
             } else {

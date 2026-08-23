@@ -186,8 +186,7 @@ pub fn parse_gguf_manifest(path: &Path) -> Result<ModelManifest> {
 
     let is_moe = header
         .metadata
-        .get(&format!("{}expert_count", arch_prefix))
-        .is_some();
+        .contains_key(&format!("{}expert_count", arch_prefix));
 
     let expert_count = header
         .metadata

@@ -8,6 +8,12 @@ fn test_quant_type_display() {
 
 #[test]
 fn test_enforcement_mechanism_display() {
-    assert_eq!(EnforcementMechanism::CgroupV2Hard.to_string(), "cgroup_v2_hard");
-    assert_eq!(EnforcementMechanism::WindowsJobObject.to_string(), "windows_job_object");
+    assert_eq!(
+        EnforcementMechanism::CgroupV2Hard.to_string(),
+        "cgroup_v2_hard"
+    );
+    assert_eq!(
+        EnforcementMechanism::WindowsJobObject.to_string(),
+        "windows_job_object"
+    );
 }

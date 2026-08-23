@@ -10,11 +10,14 @@ pub fn apply_linux_cgroup(pid: u32, budget_bytes: u64) -> Result<()> {
 
     // Attempt systemd-run transient scope if available
     let status = Command::new("systemd-run")
-        .args(&[
+        .args([
             "--scope",
             &format!("--property=MemoryMax={}", budget_bytes),
-            &format!("--property=MemoryHigh={}", (budget_bytes as f64 * 0.9) as u64),
-            &format!("--property=MemorySwapMax=0"),
+            &format!(
+                "--property=MemoryHigh={}",
+                (budget_bytes as f64 * 0.9) as u64
+            ),
+            "--property=MemorySwapMax=0",
             "true",
         ])
         .status();

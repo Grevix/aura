@@ -12,10 +12,10 @@ fn test_turbovec_nibble_kernel_numerical_correctness() {
     for r in 0..rows {
         for b in 0..blocks_per_row {
             let mut qs = [0u8; 16];
-            for i in 0..16 {
+            for (i, item) in qs.iter_mut().enumerate() {
                 let q0 = ((r + b + i) % 15) as u8;
                 let q1 = ((r * 2 + b + i) % 15) as u8;
-                qs[i] = (q1 << 4) | (q0 & 0x0F);
+                *item = (q1 << 4) | (q0 & 0x0F);
             }
             // Scale d = 0.125 (0x3000 in IEEE fp16)
             weights.push(BlockQ4_0 { d: 0x3000, qs });
@@ -23,8 +23,8 @@ fn test_turbovec_nibble_kernel_numerical_correctness() {
     }
 
     let mut x = vec![0.0f32; cols];
-    for i in 0..cols {
-        x[i] = ((i % 17) as f32 - 8.0) * 0.1;
+    for (i, val) in x.iter_mut().enumerate().take(cols) {
+        *val = ((i % 17) as f32 - 8.0) * 0.1;
     }
 
     let mut y_ref = vec![0.0f32; rows];

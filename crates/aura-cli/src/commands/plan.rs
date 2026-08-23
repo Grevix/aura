@@ -6,10 +6,18 @@ use std::path::Path;
 fn parse_memory_budget(budget_str: &str) -> u64 {
     let lower = budget_str.trim().to_lowercase();
     if lower.ends_with('g') || lower.ends_with("gb") {
-        let num: f64 = lower.trim_end_matches("gb").trim_end_matches('g').parse().unwrap_or(4.0);
+        let num: f64 = lower
+            .trim_end_matches("gb")
+            .trim_end_matches('g')
+            .parse()
+            .unwrap_or(4.0);
         (num * 1e9) as u64
     } else if lower.ends_with('m') || lower.ends_with("mb") {
-        let num: f64 = lower.trim_end_matches("mb").trim_end_matches('m').parse().unwrap_or(4000.0);
+        let num: f64 = lower
+            .trim_end_matches("mb")
+            .trim_end_matches('m')
+            .parse()
+            .unwrap_or(4000.0);
         (num * 1e6) as u64
     } else {
         4_000_000_000
@@ -36,16 +44,39 @@ pub fn execute_plan(model_path: &str, memory: &str, context: Option<usize>) {
 
     println!("=== EXECUTION PLAN FOR: {} ===", manifest.name);
     println!("Architecture       : {}", manifest.architecture_family);
-    println!("Requested Budget   : {} ({:.2} GB)", memory, budget_bytes as f64 / 1e9);
+    println!(
+        "Requested Budget   : {} ({:.2} GB)",
+        memory,
+        budget_bytes as f64 / 1e9
+    );
     println!("Enforcement Mode   : {}", plan.enforcement_mechanism);
-    println!("Feasibility Status : {}", if plan.is_feasible { "✅ FEASIBLE" } else { "⚠️ INFEASIBLE" });
+    println!(
+        "Feasibility Status : {}",
+        if plan.is_feasible {
+            "✅ FEASIBLE"
+        } else {
+            "⚠️ INFEASIBLE"
+        }
+    );
     println!("Details            : {}", plan.feasibility_notes);
 
     println!("\n=== ESTIMATED MEMORY FOOTPRINT ===");
-    println!("Model Weights      : {:.2} GB", plan.estimated_weight_bytes as f64 / 1e9);
-    println!("KV Cache Footprint : {:.2} GB", plan.estimated_kv_cache_bytes as f64 / 1e9);
-    println!("Runtime Overhead   : {:.2} MB", plan.estimated_overhead_bytes as f64 / 1e6);
-    println!("Total Estimated RSS: {:.2} GB", plan.estimated_peak_rss_bytes as f64 / 1e9);
+    println!(
+        "Model Weights      : {:.2} GB",
+        plan.estimated_weight_bytes as f64 / 1e9
+    );
+    println!(
+        "KV Cache Footprint : {:.2} GB",
+        plan.estimated_kv_cache_bytes as f64 / 1e9
+    );
+    println!(
+        "Runtime Overhead   : {:.2} MB",
+        plan.estimated_overhead_bytes as f64 / 1e6
+    );
+    println!(
+        "Total Estimated RSS: {:.2} GB",
+        plan.estimated_peak_rss_bytes as f64 / 1e9
+    );
 
     println!("\n=== RECOMMENDED CONFIGURATION ===");
     println!("Quantization Variant: {}", plan.recommended_quant);
@@ -56,5 +87,8 @@ pub fn execute_plan(model_path: &str, memory: &str, context: Option<usize>) {
 
     println!("\n=== PREDICTED PERFORMANCE ===");
     println!("Est. TTFT Latency  : {:.2} ms", plan.predicted_ttft_ms);
-    println!("Est. Decode Speed  : {:.2} tok/s", plan.predicted_decode_tok_per_sec);
+    println!(
+        "Est. Decode Speed  : {:.2} tok/s",
+        plan.predicted_decode_tok_per_sec
+    );
 }

@@ -81,9 +81,7 @@ pub fn generate_benchmark_report(
 
     let reproduce_command = format!(
         "aura run {} --memory {} --context {}",
-        manifest.name,
-        plan.memory_budget_bytes,
-        plan.recommended_context
+        manifest.name, plan.memory_budget_bytes, plan.recommended_context
     );
 
     BenchmarkReport {
@@ -104,9 +102,15 @@ pub fn generate_benchmark_report(
         },
         baseline_comparison: BaselineComparison {
             baseline_engine: "llama.cpp default CLI".to_string(),
-            baseline_result: if cold_decode > 0.0 { "completed".to_string() } else { "OOM".to_string() },
+            baseline_result: if cold_decode > 0.0 {
+                "completed".to_string()
+            } else {
+                "OOM".to_string()
+            },
             baseline_decode_tok_per_sec: Some(cold_decode * 0.8),
-            aura_win_description: "AURA optimized thread count and context allocation to enforce RAM limit cleanly.".to_string(),
+            aura_win_description:
+                "AURA optimized thread count and context allocation to enforce RAM limit cleanly."
+                    .to_string(),
         },
         reproduce_command,
     }

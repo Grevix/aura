@@ -59,8 +59,11 @@ impl ExpertCacheManager {
                         self.cached_experts.pop_front();
                     } else if self.policy == CachePolicy::Lfu {
                         // Evict least frequently used
-                        if let Some((&min_id, _)) = self.lfu_counts.iter().min_by_key(|entry| entry.1) {
-                            if let Some(pos) = self.cached_experts.iter().position(|&e| e == min_id) {
+                        if let Some((&min_id, _)) =
+                            self.lfu_counts.iter().min_by_key(|entry| entry.1)
+                        {
+                            if let Some(pos) = self.cached_experts.iter().position(|&e| e == min_id)
+                            {
                                 self.cached_experts.remove(pos);
                             } else {
                                 self.cached_experts.pop_front();

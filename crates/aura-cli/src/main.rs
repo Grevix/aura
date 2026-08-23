@@ -46,7 +46,11 @@ enum Commands {
         memory: String,
 
         /// Prompt string for generation
-        #[arg(short, long, default_value = "Explain quantum computing in three sentences.")]
+        #[arg(
+            short,
+            long,
+            default_value = "Explain quantum computing in three sentences."
+        )]
         prompt: String,
     },
 
