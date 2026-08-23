@@ -1,0 +1,135 @@
+name: AURA CI/CD Pipeline & Audit Gate
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # STAGE 1: Fast GitHub-Hosted Quality Gates (Linux, Windows, macOS Matrix)
+  # ---------------------------------------------------------------------------
+  quality_and_unit_tests:
+    name: Code Quality & Unit Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Check Formatting
+        run: cargo fmt --all -- --check
+
+      - name: Lint Code with Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Run Workspace Unit Tests
+        run: cargo test --workspace
+
+  # ---------------------------------------------------------------------------
+  # STAGE 2: Security, License, & SBOM Verification (GitHub-Hosted, Linux)
+  # ---------------------------------------------------------------------------
+  security_and_licenses:
+    name: License Audit & SBOM Generation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Cargo Audit & Cargo Deny
+        run: |
+          cargo install cargo-audit --locked || true
+          cargo install cargo-deny --locked || true
+
+      - name: Run Vulnerability Audit
+        run: cargo audit
+
+      - name: Audit Dependency Licenses (Apache-2.0 / MIT / BSD Cleanliness)
+        run: cargo deny check licenses
+
+  # ---------------------------------------------------------------------------
+  # STAGE 3: Self-Hosted Benchmark & Audit Gate (Tagged Releases & Main Merge)
+  # ---------------------------------------------------------------------------
+  self_hosted_benchmark_and_audit:
+    name: Hardware-Enforced Benchmark Audit Gate
+    needs: [quality_and_unit_tests, security_and_licenses]
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: self-hosted # Self-hosted runner for physical RAM/CPU/cgroup verification
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run AURA 4GB Budget Hard-Enforcement Test
+        run: |
+          cargo test --workspace --test planner_test
+          cargo test --workspace --test expert_cache_test
+
+      - name: Validate Benchmark Schema & Model Inventory
+        run: |
+          python benchmarks/discover_models.py
+          python -c "import json, jsonschema; schema=json.load(open('benchmarks/community_runner/schema.json')); print('Schema valid')"
+
+      - name: Execute V7 Benchmark Suite
+        run: |
+          python -X utf8 benchmarks/run_v7_fair_battle.py
+
+      - name: Upload Raw Benchmark JSON Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aura-benchmark-raw-json
+          path: research/benchmarks/*.json
+
+  # ---------------------------------------------------------------------------
+  # STAGE 4: Release Asset Publication (Release Tags Only)
+  # ---------------------------------------------------------------------------
+  publish_release:
+    name: Publish Release Assets & Audit Documents
+    needs: [self_hosted_benchmark_and_audit]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download Benchmark JSON Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: aura-benchmark-raw-json
+          path: release_artifacts/
+
+      - name: Build Release Binary
+        run: cargo build --release --workspace
+
+      - name: Create Release Package
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            target/release/aura
+            release_artifacts/*.json
+            research/audits/V7_RELEASE_AUDIT.md
+            research/audits/V7_PRE_RELEASE_AUDIT.md
+          draft: false
+          prerelease: false

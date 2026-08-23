@@ -1,0 +1,34 @@
+{
+  "timestamp_utc": "2026-08-23T11:12:00Z",
+  "target_machine": {
+    "cpu": "Intel(R) Core(TM) i5-13420H",
+    "architecture": "x86_64",
+    "physical_cores": 8,
+    "logical_cores": 12,
+    "base_clock_ghz": 2.10,
+    "simd_extensions": ["AVX", "AVX2", "FMA", "SSE4.2"],
+    "installed_ram_bytes": 18027782144,
+    "installed_ram_gb": 16.79,
+    "storage_type": "NVMe PCIe Gen4 SSD",
+    "storage_seq_read_mbps": 5318.0,
+    "os_name": "Windows 11 Home / Workstation",
+    "os_build": "26100"
+  },
+  "software_stack": {
+    "rust_version": "1.96.1 (31fca3adb 2026-06-26)",
+    "python_version": "3.14.3",
+    "ollama_version": "0.32.15",
+    "aura_version": "0.1.0",
+    "aura_commit": "4b68e9102c9a",
+    "llama_cpp_backend": "Embedded / Ollama llama-server.exe v0.32.15"
+  },
+  "hardware_constraints": {
+    "gpu_enabled": false,
+    "gpu_offload_layers": 0,
+    "cuda_available": false,
+    "thread_count": 8,
+    "primary_process_memory_budget_bytes": 4294967296,
+    "primary_process_memory_budget_gb": 4.0,
+    "enforcement_mechanism": "Win32 Job Object ProcessMemoryLimit (Virtual Commit)"
+  }
+}

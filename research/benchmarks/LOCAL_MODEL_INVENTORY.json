@@ -1,0 +1,67 @@
+{
+  "inventory_version": "1.0.0",
+  "recorded_at_utc": "2026-08-23T14:35:00Z",
+  "ollama_version": "0.32.15",
+  "local_models": [
+    {
+      "model_name": "qwen2.5-coder:7b",
+      "size_gb": 4.7,
+      "parameter_count": "7.6B",
+      "quantization": "Q4_K_M",
+      "format": "GGUF",
+      "aura_compatible": true,
+      "airllm_compatible": false,
+      "notes": "Directly supported by AURA via Ollama GGUF blob resolver"
+    },
+    {
+      "model_name": "llama3:8b-instruct-q4_0",
+      "size_gb": 4.7,
+      "parameter_count": "8.0B",
+      "quantization": "Q4_0",
+      "format": "GGUF",
+      "aura_compatible": true,
+      "airllm_compatible": false,
+      "notes": "Directly supported by AURA via Ollama GGUF blob resolver"
+    },
+    {
+      "model_name": "deepseek-r1:latest",
+      "size_gb": 5.2,
+      "parameter_count": "7.0B",
+      "quantization": "Q4_K_M",
+      "format": "GGUF",
+      "aura_compatible": true,
+      "airllm_compatible": false,
+      "notes": "Directly supported by AURA via Ollama GGUF blob resolver"
+    },
+    {
+      "model_name": "mistral:latest",
+      "size_gb": 4.4,
+      "parameter_count": "7.2B",
+      "quantization": "Q4_0",
+      "format": "GGUF",
+      "aura_compatible": true,
+      "airllm_compatible": false,
+      "notes": "Directly supported by AURA via Ollama GGUF blob resolver"
+    },
+    {
+      "model_name": "gemma4:latest",
+      "size_gb": 9.6,
+      "parameter_count": "9.2B",
+      "quantization": "Q4_K_M",
+      "format": "GGUF",
+      "aura_compatible": true,
+      "airllm_compatible": false,
+      "notes": "Directly supported by AURA via Ollama GGUF blob resolver"
+    },
+    {
+      "model_name": "kimi-k3:cloud",
+      "size_gb": 0.0,
+      "parameter_count": "2.81T",
+      "quantization": "Cloud Remote",
+      "format": "Remote API",
+      "aura_compatible": false,
+      "airllm_compatible": false,
+      "notes": "Cloud Reference Baseline tag (Remote endpoint)"
+    }
+  ]
+}

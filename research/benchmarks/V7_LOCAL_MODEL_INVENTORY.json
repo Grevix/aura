@@ -1,0 +1,301 @@
+{
+  "generated_at": "2026-08-23T16:35:56.852519+00:00",
+  "discovery_method": "Ollama REST GET http://localhost:11434/api/tags",
+  "model_count_total": 13,
+  "models": [
+    {
+      "model_tag": "qwen3:4b",
+      "digest_sha256": "359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
+      "size_bytes": 2497293931,
+      "size_gb": 2.326,
+      "family": "qwen3",
+      "families": [
+        "qwen3"
+      ],
+      "parameter_size_str": "4.0B",
+      "parameter_size_B": 4.0,
+      "quantization": "Q4_K_M",
+      "context_length": 262144,
+      "embedding_length": 2560,
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "is_cloud_only": false,
+      "tier": "MEDIUM",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "qwen3:1.7b",
+      "digest_sha256": "8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7",
+      "size_bytes": 1359293444,
+      "size_gb": 1.266,
+      "family": "qwen3",
+      "families": [
+        "qwen3"
+      ],
+      "parameter_size_str": "2.0B",
+      "parameter_size_B": 2.0,
+      "quantization": "Q4_K_M",
+      "context_length": 40960,
+      "embedding_length": 2048,
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "is_cloud_only": false,
+      "tier": "SMALL",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "qwen3:0.6b",
+      "digest_sha256": "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435",
+      "size_bytes": 522653767,
+      "size_gb": 0.487,
+      "family": "qwen3",
+      "families": [
+        "qwen3"
+      ],
+      "parameter_size_str": "751.63M",
+      "parameter_size_B": 0.752,
+      "quantization": "Q4_K_M",
+      "context_length": 40960,
+      "embedding_length": 1024,
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "is_cloud_only": false,
+      "tier": "SMALL",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "qwen3:8b",
+      "digest_sha256": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "size_bytes": 5225388164,
+      "size_gb": 4.867,
+      "family": "qwen3",
+      "families": [
+        "qwen3"
+      ],
+      "parameter_size_str": "8.2B",
+      "parameter_size_B": 8.2,
+      "quantization": "Q4_K_M",
+      "context_length": 40960,
+      "embedding_length": 4096,
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "is_cloud_only": false,
+      "tier": "LARGE",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "llama3.2:3b",
+      "digest_sha256": "a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72",
+      "size_bytes": 2019393189,
+      "size_gb": 1.881,
+      "family": "llama",
+      "families": [
+        "llama"
+      ],
+      "parameter_size_str": "3.2B",
+      "parameter_size_B": 3.2,
+      "quantization": "Q4_K_M",
+      "context_length": 131072,
+      "embedding_length": 3072,
+      "capabilities": [
+        "completion",
+        "tools"
+      ],
+      "is_cloud_only": false,
+      "tier": "MEDIUM",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "llama3.2:1b",
+      "digest_sha256": "baf6a787fdffd633537aa2eb51cfd54cb93ff08e28040095462bb63daf552878",
+      "size_bytes": 1321098329,
+      "size_gb": 1.23,
+      "family": "llama",
+      "families": [
+        "llama"
+      ],
+      "parameter_size_str": "1.2B",
+      "parameter_size_B": 1.2,
+      "quantization": "Q8_0",
+      "context_length": 131072,
+      "embedding_length": 2048,
+      "capabilities": [
+        "completion",
+        "tools"
+      ],
+      "is_cloud_only": false,
+      "tier": "SMALL",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "kimi-k3:cloud",
+      "digest_sha256": "630e737485bd19f7244fa91f135be116780a25e942ceed0d2aceabaccbd5bf99",
+      "size_bytes": 308,
+      "size_gb": 0.0,
+      "family": "",
+      "families": null,
+      "parameter_size_str": "2.81T",
+      "parameter_size_B": 2810.0,
+      "quantization": "MXFP4",
+      "context_length": 1048576,
+      "embedding_length": 7168,
+      "capabilities": [
+        "vision",
+        "thinking",
+        "completion",
+        "tools"
+      ],
+      "is_cloud_only": true,
+      "tier": "CLOUD_ONLY",
+      "include_in_local_benchmark": false,
+      "exclusion_reason": "Cloud-routed model (remote_host detected). No local GGUF blob. Parameter count reported as 2.81T but this is a remote service, NOT a locally executed model weight."
+    },
+    {
+      "model_tag": "qwen2.5-coder:7b",
+      "digest_sha256": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+      "size_bytes": 4683087561,
+      "size_gb": 4.361,
+      "family": "qwen2",
+      "families": [
+        "qwen2"
+      ],
+      "parameter_size_str": "7.6B",
+      "parameter_size_B": 7.6,
+      "quantization": "Q4_K_M",
+      "context_length": 32768,
+      "embedding_length": 3584,
+      "capabilities": [
+        "completion",
+        "tools",
+        "insert"
+      ],
+      "is_cloud_only": false,
+      "tier": "LARGE",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "deepseek-r1:latest",
+      "digest_sha256": "6995872bfe4c521a67b32da386cd21d5c6e819b6e0d62f79f64ec83be99f5763",
+      "size_bytes": 5225376047,
+      "size_gb": 4.867,
+      "family": "qwen3",
+      "families": [
+        "qwen3"
+      ],
+      "parameter_size_str": "8.2B",
+      "parameter_size_B": 8.2,
+      "quantization": "Q4_K_M",
+      "context_length": 131072,
+      "embedding_length": 4096,
+      "capabilities": [
+        "completion",
+        "thinking"
+      ],
+      "is_cloud_only": false,
+      "tier": "LARGE",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "llama3:8b-instruct-q4_0",
+      "digest_sha256": "365c0bd3c000a25d28ddbf732fe1c6add414de7275464c4e4d1c3b5fcb5d8ad1",
+      "size_bytes": 4661224676,
+      "size_gb": 4.341,
+      "family": "llama",
+      "families": [
+        "llama"
+      ],
+      "parameter_size_str": "8.0B",
+      "parameter_size_B": 8.0,
+      "quantization": "Q4_0",
+      "context_length": 8192,
+      "embedding_length": 4096,
+      "capabilities": [
+        "completion"
+      ],
+      "is_cloud_only": false,
+      "tier": "LARGE",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "gemma4:latest",
+      "digest_sha256": "c6eb396dbd5992bbe3f5cdb947e8bbc0ee413d7c17e2beaae69f5d569cf982eb",
+      "size_bytes": 9608350718,
+      "size_gb": 8.948,
+      "family": "gemma4",
+      "families": [
+        "gemma4"
+      ],
+      "parameter_size_str": "8.0B",
+      "parameter_size_B": 8.0,
+      "quantization": "Q4_K_M",
+      "context_length": 0,
+      "embedding_length": 0,
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "is_cloud_only": false,
+      "tier": "LARGE",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "llama3:latest",
+      "digest_sha256": "365c0bd3c000a25d28ddbf732fe1c6add414de7275464c4e4d1c3b5fcb5d8ad1",
+      "size_bytes": 4661224676,
+      "size_gb": 4.341,
+      "family": "llama",
+      "families": [
+        "llama"
+      ],
+      "parameter_size_str": "8.0B",
+      "parameter_size_B": 8.0,
+      "quantization": "Q4_0",
+      "context_length": 8192,
+      "embedding_length": 4096,
+      "capabilities": [
+        "completion"
+      ],
+      "is_cloud_only": false,
+      "tier": "LARGE",
+      "include_in_local_benchmark": true
+    },
+    {
+      "model_tag": "mistral:latest",
+      "digest_sha256": "6577803aa9a036369e481d648a2baebb381ebc6e897f2bb9a766a2aa7bfbc1cf",
+      "size_bytes": 4372824384,
+      "size_gb": 4.073,
+      "family": "llama",
+      "families": [
+        "llama"
+      ],
+      "parameter_size_str": "7.2B",
+      "parameter_size_B": 7.2,
+      "quantization": "Q4_K_M",
+      "context_length": 32768,
+      "embedding_length": 4096,
+      "capabilities": [
+        "completion",
+        "tools"
+      ],
+      "is_cloud_only": false,
+      "tier": "LARGE",
+      "include_in_local_benchmark": true
+    }
+  ],
+  "model_count_local": 12,
+  "model_count_cloud": 1,
+  "model_count_testable": 12
+}

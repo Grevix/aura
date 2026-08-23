@@ -1,0 +1,16 @@
+[package]
+name = "aura-backends"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+aura-core.workspace = true
+aura-model.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+dirs.workspace = true
+which.workspace = true
+reqwest.workspace = true

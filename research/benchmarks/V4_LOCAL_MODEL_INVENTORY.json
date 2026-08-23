@@ -1,0 +1,50 @@
+{
+  "inventory_date": "2026-08-23",
+  "local_models": [
+    {
+      "model_tag": "qwen2.5-coder:7b",
+      "param_count": "7.6B",
+      "quantization": "Q4_K_M",
+      "size_gb": 4.7,
+      "path": "C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-4355fdf3a0e68d0676a084c831349f82d1c6be1bfd6f2c3d8206d27ed4ca2187",
+      "category": "B_7B-8B",
+      "comparable": true
+    },
+    {
+      "model_tag": "llama3:8b-instruct-q4_0",
+      "param_count": "8.0B",
+      "quantization": "Q4_0",
+      "size_gb": 4.7,
+      "path": "C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-a6990ed6143f6087b767d025b90757d5c58908889417849e755257ef51df677d",
+      "category": "B_7B-8B",
+      "comparable": true
+    },
+    {
+      "model_tag": "deepseek-r1:latest",
+      "param_count": "7.0B",
+      "quantization": "Q4_K_M",
+      "size_gb": 5.2,
+      "path": "C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-6e9f90f02bb31a986c7562095f6ef22e84d436ef8be3ae62491a56ef7d057770",
+      "category": "B_7B-8B",
+      "comparable": true
+    },
+    {
+      "model_tag": "mistral:latest",
+      "param_count": "7.2B",
+      "quantization": "Q4_0",
+      "size_gb": 4.4,
+      "path": "C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-ff2b045236f9479b7680ef0a11d044a17961b7f04318c460f60c6d2673891460",
+      "category": "B_7B-8B",
+      "comparable": true
+    },
+    {
+      "model_tag": "gemma4:latest",
+      "param_count": "9.2B",
+      "quantization": "Q4_K_M",
+      "size_gb": 9.6,
+      "path": "C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-4c6e9389f4b9f36f6d634db847754b2d15be8708c90967388488e07a3efd85c1",
+      "category": "C_14B_OR_LARGER",
+      "comparable": true
+    }
+  ]
+}

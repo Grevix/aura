@@ -1,0 +1,14 @@
+{
+  "aura": {
+    "sample_count": 25,
+    "median_sec": 1.9589262008666992,
+    "mean_sec": 1.9815865516662599,
+    "stdev_sec": 0.07903569462720463
+  },
+  "ollama": {
+    "sample_count": 0,
+    "median_sec": null,
+    "mean_sec": null,
+    "stdev_sec": null
+  }
+}

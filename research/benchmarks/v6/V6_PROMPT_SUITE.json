@@ -1,0 +1,126 @@
+{
+  "categories": {
+    "CATEGORY_A_SIMPLE_CHAT": [
+      "Explain what an operating system does in simple words.",
+      "Explain recursion to a beginner.",
+      "What is the difference between RAM and storage?",
+      "Give me a 5-day study plan to learn computer science basics.",
+      "Explain HTTP in simple language.",
+      "What is the difference between compiler and interpreter?",
+      "Explain cloud computing to a non-technical person."
+    ],
+    "CATEGORY_B_GENERAL_KNOWLEDGE": [
+      "Explain how gravity works according to general relativity.",
+      "What causes ocean tides?",
+      "How do solar panels convert light into electricity?",
+      "Explain the history of the Internet.",
+      "What is the Fibonacci sequence and where does it appear in nature?",
+      "Explain photosynthesis simply.",
+      "What is the difference between climate and weather?"
+    ],
+    "CATEGORY_C_CODING": [
+      "Write a C program for stack implementation using an array.",
+      "Write a Python program that reads a CSV and detects missing values.",
+      "Implement binary search in Python with clear comments.",
+      "Optimize a slow Python loop calculating Fibonacci numbers.",
+      "Write a REST API example in Python using FastAPI.",
+      "Write a C program to reverse a singly linked list.",
+      "Implement a queue using two stacks in Java."
+    ],
+    "CATEGORY_D_DEBUGGING": [
+      "Find the bug in this Python code: def calc(x): return x / 0",
+      "Explain a segmentation fault in C and how to prevent it.",
+      "Find bugs in C++ code: int main() { int* p = NULL; *p = 10; }",
+      "Debug recursion depth exceeded error in Python.",
+      "Identify memory leak in this C code: int* p = malloc(100); return 0;",
+      "Fix off-by-one error in array iteration: for(int i=0; i<=len; i++)",
+      "Debug deadlocks in multithreaded code."
+    ],
+    "CATEGORY_E_CODE_GENERATION": [
+      "Write a complete C compiler frontend lexer in Python.",
+      "Create a production-ready Express.js middleware for JWT authentication.",
+      "Build a React hook for managing local storage state.",
+      "Write a Rust program to parse GGUF binary headers.",
+      "Implement a thread-safe LRU cache in C++17.",
+      "Write a Python script for web scraping with BeautifulSoup.",
+      "Build a Dockerfile for a multi-stage Go build."
+    ],
+    "CATEGORY_F_MATH_REASONING": [
+      "Solve this riddle: A farmer has 17 sheep, all but 9 die. How many are left?",
+      "If 5 machines take 5 minutes to make 5 widgets, how long do 100 machines take to make 100 widgets?",
+      "Calculate the derivative of f(x) = 3x^2 + 5x - 7.",
+      "Explain Bayes Theorem with a medical diagnostic example.",
+      "Solve the probability of drawing 2 aces in a row from a standard deck.",
+      "Explain matrix multiplication step by step.",
+      "What is the difference between discrete and continuous probability distributions?"
+    ],
+    "CATEGORY_G_LONG_CONTEXT": [
+      "Read this specification: The system must handle 10,000 requests per second with less than 50ms latency. Extract all requirements.",
+      "Summarize the history of artificial intelligence from Alan Turing to modern LLMs.",
+      "Analyze the following architecture and list security vulnerabilities.",
+      "Review this database schema: users(id, name), orders(id, user_id, amount). Suggest optimizations.",
+      "Summarize the key architectural differences between Transformers and Mamba architectures.",
+      "Explain virtual memory management, page tables, TLB, and page fault handling.",
+      "Compare monoliths, microservices, and serverless architectures."
+    ],
+    "CATEGORY_H_DOCUMENT_STYLE": [
+      "Draft a professional cover letter for a Senior Systems Engineer role.",
+      "Write an incident post-mortem report for a database outage.",
+      "Create a software architecture design document template.",
+      "Draft an API deprecation notice for developers.",
+      "Write executive summary for a cloud migration proposal.",
+      "Draft a pull request description for a major refactoring.",
+      "Write user documentation for a CLI tool."
+    ],
+    "CATEGORY_I_MULTI_TURN": [
+      "I am building a Python web application. What framework should I use?",
+      "It uses PostgreSQL. How should I set up the database ORM?",
+      "Now design the database tables for users, posts, and comments.",
+      "Now write SQL queries to fetch top 10 most active users.",
+      "Now write a FastAPI endpoint to serve these statistics."
+    ],
+    "CATEGORY_J_DATA_ANALYSIS": [
+      "Write pandas code to clean a CSV dataset with missing values and duplicates.",
+      "Explain the difference between mean, median, mode, and standard deviation.",
+      "Design an anomaly detection pipeline for financial transaction data.",
+      "Write SQL code to calculate monthly rolling 7-day active user counts.",
+      "Explain how to handle imbalanced datasets in machine learning.",
+      "Explain principal component analysis (PCA) intuitively.",
+      "Write Python code to generate correlation matrix plot using Seaborn."
+    ],
+    "CATEGORY_K_JSON_STRUCTURED_OUTPUT": [
+      "Return the answer strictly as JSON with fields: problem, solution, complexity, risks.",
+      "Extract entity information from this text into JSON: Apple announced iPhone 16 in Cupertino.",
+      "Format a list of 3 programming languages as a JSON array of objects with keys: name, year, creator.",
+      "Return user schema definition strictly in JSON Schema draft-07 format.",
+      "Convert a sample CSV row into a nested JSON object."
+    ],
+    "CATEGORY_L_TECHNICAL_REASONING": [
+      "Compare BFS and DFS algorithms and recommend one for finding shortest paths in unweighted graphs.",
+      "Explain the Byzantine Generals Problem in distributed computing.",
+      "Design a cache eviction algorithm combining LRU and LFU characteristics.",
+      "Explain memory ordering barriers in C++ atomic operations.",
+      "Compare B-Trees vs LSM-Trees for database storage engines."
+    ],
+    "CATEGORY_M_REAL_WORLD_DEVELOPER": [
+      "Design a Chrome extension that automatically groups browser tabs by domain.",
+      "Design a scalable backend for 100,000 concurrent users.",
+      "Review a microservice architecture and identify single points of failure.",
+      "Give me a production deployment plan for a web app using Kubernetes.",
+      "Design a rate limiter using Redis token bucket algorithm."
+    ],
+    "CATEGORY_N_REPETITIVE_TASK": [
+      "What is the time complexity of QuickSort?",
+      "Explain the average case time complexity of QuickSort.",
+      "Why is QuickSort O(n^2) in the worst case?",
+      "How does median-of-three pivot selection improve QuickSort?",
+      "Compare QuickSort vs MergeSort memory consumption."
+    ],
+    "CATEGORY_O_EXTREME_CONTEXT": [
+      "Explain the Linux kernel memory management subsystem, page cache, and page fault handling in extreme detail.",
+      "Design a fault-tolerant distributed consensus engine like Raft from scratch.",
+      "Write a complete C parser grammar and AST data structures in C++.",
+      "Refactor a 500-line monolithic function into clean modular components with unit tests."
+    ]
+  }
+}

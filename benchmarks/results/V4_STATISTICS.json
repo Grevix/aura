@@ -1,0 +1,16 @@
+{
+  "timestamp_utc": "2026-08-23T09:43:09Z",
+  "memory_budget_gb": 4.0,
+  "aura": {
+    "sample_count": 25,
+    "success_rate_percent": 100.0,
+    "median_sec": 1.9589,
+    "mean_sec": 1.9816,
+    "stdev_sec": 0.0790
+  },
+  "ollama": {
+    "sample_count": 0,
+    "success_rate_percent": 0.0,
+    "failure_reason": "Non-interactive TTY stdin timeout (>60s)"
+  }
+}

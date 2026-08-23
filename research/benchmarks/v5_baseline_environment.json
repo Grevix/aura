@@ -1,0 +1,18 @@
+{
+  "timestamp_utc": "2026-08-23T10:04:00+00:00",
+  "git_commit": "4b68e9102c9a",
+  "compiler_version": "rustc 1.80.0 (051478957 2024-07-21)",
+  "system": {
+    "os": "Windows 11 Home Single Language x86_64 (Build 26100)",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13420H",
+    "physical_cores": 8,
+    "logical_cores": 12,
+    "simd_features": ["AVX", "AVX2", "FMA"],
+    "physical_ram_gb": 16.79,
+    "available_ram_gb": 8.45,
+    "storage_device": "NVMe PCIe Gen4 SSD",
+    "gpu": "CPU-Only Mode (GPU Offload Layers = 0)"
+  },
+  "hard_process_memory_limit_gb": 4.0,
+  "small_model_fast_path_enabled": true
+}

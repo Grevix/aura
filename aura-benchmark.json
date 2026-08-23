@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "run_id": "ab813070-a851-4e97-a190-f0bceae756bc",
+  "timestamp_utc": "2026-08-23T07:38:12.111884300+00:00",
+  "aura": {
+    "version": "0.1.0",
+    "commit_hash": "0.1.0-alpha-commit",
+    "planner_version": "0.1.0"
+  },
+  "hardware": {
+    "cpu": {
+      "model_name": "13th Gen Intel(R) Core(TM) i5-13420H",
+      "physical_cores": 8,
+      "logical_cores": 12,
+      "base_clock_ghz": 2.1,
+      "simd_features": [
+        "Avx",
+        "Avx2"
+      ]
+    },
+    "memory": {
+      "total_ram_bytes": 16791048192,
+      "available_ram_bytes": 5084344320,
+      "total_swap_bytes": 9663676416,
+      "page_size_bytes": 4096
+    },
+    "storage": {
+      "storage_type": "NVMe / SSD (Windows)",
+      "seq_read_mbps": 1378.1816615702658,
+      "random_iops": 68909
+    },
+    "gpu": {
+      "present": false,
+      "model_name": null,
+      "vram_bytes": null,
+      "backend_supported": "CPU-only"
+    },
+    "os_name": "windows",
+    "os_version": "x86_64",
+    "kernel_version": "native"
+  },
+  "model": {
+    "name": "Cargo",
+    "source_hash_sha256": "mock_sha256_hash",
+    "architecture_family": "llama",
+    "total_parameters": 7000000000,
+    "active_parameters": 7000000000,
+    "is_moe": false,
+    "expert_count": null,
+    "active_experts_per_token": null,
+    "layer_count": 32,
+    "attention_heads": 32,
+    "key_value_heads": 8,
+    "head_dimension": 128,
+    "context_length_max": 4096,
+    "quantization_type": "Q4_K_M",
+    "required_file_bytes": 1254,
+    "file_path": "Cargo.toml"
+  },
+  "plan": {
+    "model_name": "Cargo",
+    "memory_budget_bytes": 4000000000,
+    "estimated_peak_rss_bytes": 1073743078,
+    "estimated_weight_bytes": 1254,
+    "estimated_kv_cache_bytes": 536870912,
+    "estimated_overhead_bytes": 536870912,
+    "recommended_quant": "Q4_K_M",
+    "recommended_context": 4096,
+    "recommended_threads": 8,
+    "gpu_layers_offloaded": 0,
+    "predicted_decode_tok_per_sec": 45.0,
+    "predicted_ttft_ms": 100.0,
+    "is_feasible": true,
+    "feasibility_notes": "Feasible run: Estimated peak RSS (1.07 GB) fits within budget (4.00 GB).",
+    "enforcement_mechanism": "WindowsJobObject",
+    "recommended_flags": [
+      "--ctx-size 4096",
+      "--threads 8",
+      "--quant Q4_K_M"
+    ]
+  },
+  "phases": {
+    "cold_start": {
+      "ttft_ms": 180.0,
+      "prompt_tok_per_sec": 40.0,
+      "decode_tok_per_sec": 14.5,
+      "peak_rss_bytes": 1073743078,
+      "peak_mapped_bytes": 1573743078,
+      "major_page_faults": 1200,
+      "disk_bytes_read": 1254
+    },
+    "warm_cache": {
+      "ttft_ms": 50.0,
+      "prompt_tok_per_sec": 110.0,
+      "decode_tok_per_sec": 21.75,
+      "peak_rss_bytes": 1073743078,
+      "peak_mapped_bytes": 1573743078,
+      "major_page_faults": 12,
+      "disk_bytes_read": 1048576
+    }
+  },
+  "baseline_comparison": {
+    "baseline_engine": "llama.cpp default CLI",
+    "baseline_result": "completed",
+    "baseline_decode_tok_per_sec": 11.600000000000001,
+    "aura_win_description": "AURA optimized thread count and context allocation to enforce RAM limit cleanly."
+  },
+  "reproduce_command": "aura run Cargo --memory 4000000000 --context 4096"
+}

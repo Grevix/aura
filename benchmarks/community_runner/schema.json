@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AURA Community Benchmark Result",
+  "version": "v7.0",
+  "type": "object",
+  "required": ["schema_version", "timestamp_utc", "hardware", "ollama_version", "results"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "v7.0" },
+    "timestamp_utc":  { "type": "string", "format": "date-time" },
+    "contributor_note": { "type": "string" },
+    "hardware": {
+      "type": "object",
+      "required": ["hostname", "os", "cpu"],
+      "properties": {
+        "hostname":       { "type": "string" },
+        "os":             { "type": "string" },
+        "cpu":            { "type": "string" },
+        "physical_cores": { "type": "integer" },
+        "logical_cores":  { "type": "integer" },
+        "total_ram_gb":   { "type": "number", "minimum": 0 },
+        "gpu":            { "type": "string" },
+        "vram_gb":        { "type": "number" }
+      }
+    },
+    "aura_version":   { "type": "string" },
+    "ollama_version": { "type": "string" },
+    "results": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["parameter_size", "quantization", "prompts"],
+        "properties": {
+          "parameter_size": { "type": ["string", "null"] },
+          "quantization":   { "type": ["string", "null"] },
+          "context_length": { "type": ["integer", "null"] },
+          "size_gb":        { "type": "number" },
+          "digest":         { "type": "string" },
+          "prompts": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "ollama": {
+                  "type": "object",
+                  "properties": {
+                    "success":            { "type": "boolean" },
+                    "eval_count":         { "type": "integer" },
+                    "decode_tok_per_sec": { "type": ["number", "null"] },
+                    "ttft_ms":            { "type": "number" },
+                    "timing_source":      { "type": "string" }
+                  }
+                },
+                "aura_4gb": {
+                  "type": "object",
+                  "properties": {
+                    "success":      { "type": "boolean" },
+                    "wall_sec":     { "type": "number" },
+                    "is_simulated": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "passed":  { "type": "boolean" },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}

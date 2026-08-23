@@ -1,0 +1,71 @@
+name: "Benchmark Submission"
+description: "Submit a community benchmark result"
+title: "[BENCHMARK] <model> on <hardware>"
+labels: ["community-benchmark", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## AURA Community Benchmark Submission
+        Attach your `community_result_*.json` file and fill out the form below.
+        Your result will be labelled **COMMUNITY REPORTED** — not independently verified.
+
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware summary
+      placeholder: "e.g. AMD Ryzen 9 7950X, 64 GB DDR5, RTX 4090 24 GB"
+    validations:
+      required: true
+
+  - type: input
+    id: model
+    attributes:
+      label: Model tested
+      placeholder: "e.g. qwen3:14b, llama3.1:70b"
+    validations:
+      required: true
+
+  - type: input
+    id: aura_version
+    attributes:
+      label: AURA version / git commit
+      placeholder: "e.g. 0.1.0 / abc1234"
+    validations:
+      required: true
+
+  - type: input
+    id: ollama_version
+    attributes:
+      label: Ollama version
+      placeholder: "e.g. 0.32.15"
+    validations:
+      required: true
+
+  - type: textarea
+    id: results_summary
+    attributes:
+      label: Results summary
+      placeholder: |
+        Ollama decode: XX tok/s
+        AURA wall-clock: XX s
+        Memory: XX GB
+        is_simulated: true/false
+
+  - type: checkboxes
+    id: attestation
+    attributes:
+      label: Attestation
+      options:
+        - label: "I ran the benchmark using `run_community_benchmark.py` without modifying the script"
+          required: true
+        - label: "I am NOT submitting results from cloud-routed models (kimi-k3:cloud, etc.)"
+          required: true
+        - label: "I understand my result will be labelled COMMUNITY REPORTED, not project-verified"
+          required: true
+
+  - type: textarea
+    id: json_paste
+    attributes:
+      label: JSON result (paste or attach file)
+      description: "Paste the contents of your community_result_*.json file here, or attach it as a file upload"

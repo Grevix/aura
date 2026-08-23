@@ -1,0 +1,22 @@
+# Rust target directory
+/target
+/**/target
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# Local benchmark temp outputs (keep research/ artifacts)
+benchmarks/results/*.tmp

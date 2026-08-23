@@ -1,0 +1,27 @@
+{
+  "timestamp_utc": "2026-08-23T09:37:00+00:00",
+  "git_commit": "4b68e9102c9a",
+  "compiler_version": "rustc 1.80.0 (051478957 2024-07-21)",
+  "rust_channel": "stable-x86_64-pc-windows-msvc",
+  "ollama_version": "0.32.15",
+  "aura_version": "2.0.0",
+  "system": {
+    "os": "Windows 11 Home Single Language x86_64 (Build 26100)",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13420H",
+    "physical_cores": 8,
+    "logical_cores": 12,
+    "base_frequency_ghz": 2.10,
+    "simd_support": ["AVX", "AVX2", "FMA", "SSE4.2"],
+    "avx512_support": false,
+    "physical_ram_gb": 16.79,
+    "available_ram_gb": 8.45,
+    "storage_device": "NVMe PCIe Gen4 SSD",
+    "measured_seq_read_mbps": 5318.44,
+    "gpu": "CPU-Only Mode (GPU Offload Layers = 0)"
+  },
+  "experimental_target": {
+    "hard_process_memory_limit_gb": 4.0,
+    "enforcement_mechanism": "Win32 Job Object (SetInformationJobObject)",
+    "thread_count": 8
+  }
+}

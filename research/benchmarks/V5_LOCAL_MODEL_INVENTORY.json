@@ -1,0 +1,46 @@
+{
+  "inventory_date": "2026-08-23",
+  "hardware_profile": "Intel Core i5-13420H, 16.79GB RAM, NVMe SSD",
+  "models": [
+    {
+      "model_tag": "llama3.2:1b",
+      "param_count": "1.2B",
+      "size_gb": 1.3,
+      "tier": "A_TINY",
+      "fast_path_supported": true,
+      "feasibility_4gb": "FEASIBLE"
+    },
+    {
+      "model_tag": "llama3.2:3b",
+      "param_count": "3.2B",
+      "size_gb": 2.0,
+      "tier": "B_SMALL",
+      "fast_path_supported": true,
+      "feasibility_4gb": "FEASIBLE"
+    },
+    {
+      "model_tag": "gemma3:4b",
+      "param_count": "4.1B",
+      "size_gb": 3.3,
+      "tier": "C_4GB_BOUNDARY",
+      "fast_path_supported": false,
+      "feasibility_4gb": "FEASIBLE_AUTO_TUNED"
+    },
+    {
+      "model_tag": "qwen2.5-coder:7b",
+      "param_count": "7.6B",
+      "size_gb": 4.7,
+      "tier": "C_4GB_BOUNDARY",
+      "fast_path_supported": false,
+      "feasibility_4gb": "FEASIBLE_AUTO_TUNED"
+    },
+    {
+      "model_tag": "llama3:8b-instruct-q4_0",
+      "param_count": "8.0B",
+      "size_gb": 4.7,
+      "tier": "D_GENERAL_PURPOSE",
+      "fast_path_supported": false,
+      "feasibility_4gb": "FEASIBLE_AUTO_TUNED"
+    }
+  ]
+}

@@ -1,0 +1,416 @@
+{
+  "timestamp_utc": "2026-08-23T09:43:18.241338+00:00",
+  "memory_budget_gb": 4.0,
+  "runs": {
+    "CATEGORY_A_NORMAL_CHAT": [
+      {
+        "prompt": "Hey, can you explain what recursion is in simple words?",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9589262008666992,
+          "stdout_len": 1855,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.016.136 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.016.272 W srv  llama_server: -----------------\n0.00.016.275 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.016.275 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.016.275 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.016.275 W srv  llama_server: -----------------\n0.00.025.886 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.571.231 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.01857924461365,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Hey, can you explain what recursion is in simple words?']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "What is the difference between RAM and VRAM?",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9471380710601807,
+          "stdout_len": 1841,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.016.797 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.016.937 W srv  llama_server: -----------------\n0.00.016.939 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.016.940 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.016.940 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.016.940 W srv  llama_server: -----------------\n0.00.029.086 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.529.160 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.02297925949097,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'What is the difference between RAM and VRAM?']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Why is Python slower than C?",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9179346561431885,
+          "stdout_len": 1827,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.016.078 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.016.221 W srv  llama_server: -----------------\n0.00.016.224 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.016.224 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.016.224 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.016.225 W srv  llama_server: -----------------\n0.00.031.610 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.573.696 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.02977466583252,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Why is Python slower than C?']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Explain APIs like I'm a beginner.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9088821411132812,
+          "stdout_len": 1830,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.016.451 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.016.592 W srv  llama_server: -----------------\n0.00.016.595 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.016.595 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.016.595 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.016.595 W srv  llama_server: -----------------\n0.00.022.608 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.392.435 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.022380113601685,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', \"Explain APIs like I'm a beginner.\"]' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Give me a simple explanation of how an LLM generates text.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9101123809814453,
+          "stdout_len": 1855,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.015.152 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.015.284 W srv  llama_server: -----------------\n0.00.015.286 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.015.287 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.015.287 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.015.287 W srv  llama_server: -----------------\n0.00.020.070 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.414.912 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.03419637680054,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Give me a simple explanation of how an LLM generates text.']' timed out after 60 seconds"
+        }
+      }
+    ],
+    "CATEGORY_B_STUDENT_USE": [
+      {
+        "prompt": "I have an exam tomorrow. Teach me linked lists from zero and give me 5 practice questions.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9742100238800049,
+          "stdout_len": 1890,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.015.924 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.016.051 W srv  llama_server: -----------------\n0.00.016.053 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.016.053 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.016.054 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.016.054 W srv  llama_server: -----------------\n0.00.032.868 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.529.610 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.023120641708374,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'I have an exam tomorrow. Teach me linked lists from zero and give me 5 practice questions.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Explain binary search with a dry run.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.96476149559021,
+          "stdout_len": 1837,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.019.198 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.019.404 W srv  llama_server: -----------------\n0.00.019.407 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.019.408 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.019.408 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.019.408 W srv  llama_server: -----------------\n0.00.023.054 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.528.525 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.01542949676514,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Explain binary search with a dry run.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Teach me stacks and queues with C examples.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9659478664398193,
+          "stdout_len": 1843,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.018.017 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.018.204 W srv  llama_server: -----------------\n0.00.018.207 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.018.207 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.018.207 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.018.207 W srv  llama_server: -----------------\n0.00.021.108 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.530.083 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.02395749092102,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Teach me stacks and queues with C examples.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Give me a 7-day plan to learn SQL.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 2.1029257774353027,
+          "stdout_len": 1834,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.019.200 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.019.355 W srv  llama_server: -----------------\n0.00.019.360 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.019.360 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.019.361 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.019.361 W srv  llama_server: -----------------\n0.00.034.341 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.500.949 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.03286266326904,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Give me a 7-day plan to learn SQL.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Explain Big O notation using real examples.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.952648401260376,
+          "stdout_len": 1842,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.017.450 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.017.573 W srv  llama_server: -----------------\n0.00.017.575 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.017.575 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.017.575 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.017.575 W srv  llama_server: -----------------\n0.00.025.872 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.450.963 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.01713991165161,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Explain Big O notation using real examples.']' timed out after 60 seconds"
+        }
+      }
+    ],
+    "CATEGORY_C_CODING": [
+      {
+        "prompt": "Write a C program to reverse a linked list.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.975271463394165,
+          "stdout_len": 1843,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.016.629 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.016.797 W srv  llama_server: -----------------\n0.00.016.798 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.016.799 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.016.799 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.016.799 W srv  llama_server: -----------------\n0.00.025.101 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.543.447 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.02489185333252,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Write a C program to reverse a linked list.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Find the bug in this code and explain the fix: def add(a,b): return a-b",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.938845157623291,
+          "stdout_len": 1871,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.016.324 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.016.479 W srv  llama_server: -----------------\n0.00.016.482 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.016.482 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.016.482 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.016.483 W srv  llama_server: -----------------\n0.00.026.512 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.471.830 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.01961350440979,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Find the bug in this code and explain the fix: def add(a,b): return a-b']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Write a Python program that reads a CSV and detects missing values.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9426076412200928,
+          "stdout_len": 1864,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.015.759 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.015.900 W srv  llama_server: -----------------\n0.00.015.903 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.015.903 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.015.903 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.015.904 W srv  llama_server: -----------------\n0.00.027.415 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.468.808 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.02094554901123,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Write a Python program that reads a CSV and detects missing values.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Create a FastAPI endpoint for uploading a CSV file.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9531216621398926,
+          "stdout_len": 1851,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.016.147 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.016.298 W srv  llama_server: -----------------\n0.00.016.301 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.016.301 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.016.301 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.016.301 W srv  llama_server: -----------------\n0.00.029.287 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.551.791 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.01819157600403,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Create a FastAPI endpoint for uploading a CSV file.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Optimize a Python function calculating prime numbers.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9282958507537842,
+          "stdout_len": 1852,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.017.215 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.017.376 W srv  llama_server: -----------------\n0.00.017.380 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.017.381 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.017.381 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.017.381 W srv  llama_server: -----------------\n0.00.024.064 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.530.073 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.01911187171936,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Optimize a Python function calculating prime numbers.']' timed out after 60 seconds"
+        }
+      }
+    ],
+    "CATEGORY_D_SOFTWARE_ENGINEERING": [
+      {
+        "prompt": "Design the architecture for a production-ready AI chatbot.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.940807819366455,
+          "stdout_len": 1858,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.017.109 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.017.245 W srv  llama_server: -----------------\n0.00.017.248 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.017.248 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.017.248 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.017.248 W srv  llama_server: -----------------\n0.00.026.693 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.509.504 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.018417835235596,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Design the architecture for a production-ready AI chatbot.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "I am building a Chrome extension that automatically groups browser tabs. Design the system.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.94547438621521,
+          "stdout_len": 1891,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.019.250 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.019.419 W srv  llama_server: -----------------\n0.00.019.422 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.019.422 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.019.422 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.019.422 W srv  llama_server: -----------------\n0.00.026.805 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.604.843 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.01840162277222,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'I am building a Chrome extension that automatically groups browser tabs. Design the system.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Design a scalable backend for 100,000 users.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.985569715499878,
+          "stdout_len": 1844,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.019.812 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.019.944 W srv  llama_server: -----------------\n0.00.019.947 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.019.947 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.019.947 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.019.947 W srv  llama_server: -----------------\n0.00.034.503 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.717.032 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.018752098083496,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Design a scalable backend for 100,000 users.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Review a microservice architecture and identify bottlenecks.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 2.1923351287841797,
+          "stdout_len": 1860,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.029.554 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.029.907 W srv  llama_server: -----------------\n0.00.029.912 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.029.912 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.029.912 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.029.912 W srv  llama_server: -----------------\n0.00.034.322 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.883.614 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.018378496170044,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Review a microservice architecture and identify bottlenecks.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Give me a production deployment plan for a web app.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 2.2250823974609375,
+          "stdout_len": 1851,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.037.244 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.037.515 W srv  llama_server: -----------------\n0.00.037.523 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.037.523 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.037.523 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.037.524 W srv  llama_server: -----------------\n0.00.049.866 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.869.924 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.01990103721619,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Give me a production deployment plan for a web app.']' timed out after 60 seconds"
+        }
+      }
+    ],
+    "CATEGORY_E_DATA_SCIENCE": [
+      {
+        "prompt": "Explain overfitting and underfitting with examples.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.977287769317627,
+          "stdout_len": 1851,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.022.241 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.022.394 W srv  llama_server: -----------------\n0.00.022.397 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.022.397 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.022.397 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.022.397 W srv  llama_server: -----------------\n0.00.030.560 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.565.317 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.028377056121826,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Explain overfitting and underfitting with examples.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Build an end-to-end ML pipeline for fraud detection.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9798157215118408,
+          "stdout_len": 1850,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.020.991 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.021.141 W srv  llama_server: -----------------\n0.00.021.143 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.021.143 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.021.143 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.021.144 W srv  llama_server: -----------------\n0.00.037.059 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.558.876 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.0167715549469,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Build an end-to-end ML pipeline for fraud detection.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Explain transformers mathematically but in understandable language.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 2.0330798625946045,
+          "stdout_len": 1867,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.016.344 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.016.499 W srv  llama_server: -----------------\n0.00.016.502 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.016.502 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.016.503 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.016.503 W srv  llama_server: -----------------\n0.00.024.300 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.548.189 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.02061104774475,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Explain transformers mathematically but in understandable language.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Compare RAG, fine-tuning, and prompt engineering.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9483630657196045,
+          "stdout_len": 1849,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.015.106 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.015.240 W srv  llama_server: -----------------\n0.00.015.242 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.015.242 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.015.243 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.015.243 W srv  llama_server: -----------------\n0.00.023.874 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.519.946 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.02271127700806,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Compare RAG, fine-tuning, and prompt engineering.']' timed out after 60 seconds"
+        }
+      },
+      {
+        "prompt": "Design a data preprocessing pipeline for a messy CSV dataset.",
+        "aura": {
+          "runtime": "aura",
+          "success": true,
+          "elapsed_sec": 1.9702191352844238,
+          "stdout_len": 1860,
+          "stderr": "\u26a0\ufe0f WARNING: Execution Plan exceeds requested budget!\nDetails: INFEASIBLE: Estimated peak RSS (4.11 GB) exceeds budget (4.00 GB) even after context reduction to 1024.\n0.00.018.228 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)\n0.00.018.468 W srv  llama_server: -----------------\n0.00.018.470 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set\n0.00.018.471 W srv  llama_server: this can be a security risk (cross-origin attacks)\n0.00.018.471 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.018.471 W srv  llama_server: -----------------\n0.00.025.227 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.499.846 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+        },
+        "ollama": {
+          "runtime": "ollama",
+          "success": false,
+          "elapsed_sec": 60.026405572891235,
+          "error": "Command '['ollama', 'run', 'qwen2.5-coder:7b', 'Design a data preprocessing pipeline for a messy CSV dataset.']' timed out after 60 seconds"
+        }
+      }
+    ]
+  }
+}

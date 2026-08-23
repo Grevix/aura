@@ -1,0 +1,71 @@
+{
+  "timestamp_utc": "2026-08-23T08:50:55.034470+00:00",
+  "system": {
+    "os": "windows_11_x86_64",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13420H",
+    "cores": "8 physical / 12 logical",
+    "ram_gb": 16.79
+  },
+  "workload_results": {
+    "WORKLOAD_A_SHORT_CHAT": [
+      {
+        "success": true,
+        "elapsed_sec": 2.0001285076141357,
+        "output_snippet": "n be a security risk (cross-origin attacks)\n0.00.027.005 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.027.005 W srv  llama_server: -----------------\n0.00.032.502 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.529.047 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+      },
+      {
+        "success": true,
+        "elapsed_sec": 1.9535768032073975,
+        "output_snippet": "n be a security risk (cross-origin attacks)\n0.00.022.686 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.022.686 W srv  llama_server: -----------------\n0.00.031.243 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.659.863 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+      },
+      {
+        "success": true,
+        "elapsed_sec": 1.924581527709961,
+        "output_snippet": "n be a security risk (cross-origin attacks)\n0.00.017.245 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.017.245 W srv  llama_server: -----------------\n0.00.030.452 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.517.158 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+      }
+    ],
+    "WORKLOAD_B_CODING": [
+      {
+        "success": true,
+        "elapsed_sec": 1.9381728172302246,
+        "output_snippet": "n be a security risk (cross-origin attacks)\n0.00.019.244 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.019.244 W srv  llama_server: -----------------\n0.00.026.100 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.522.875 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+      },
+      {
+        "success": true,
+        "elapsed_sec": 1.9309391975402832,
+        "output_snippet": "n be a security risk (cross-origin attacks)\n0.00.018.717 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.018.718 W srv  llama_server: -----------------\n0.00.034.497 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.476.779 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+      },
+      {
+        "success": true,
+        "elapsed_sec": 2.073122501373291,
+        "output_snippet": "n be a security risk (cross-origin attacks)\n0.00.024.837 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.024.837 W srv  llama_server: -----------------\n0.00.031.144 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.603.801 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+      }
+    ],
+    "WORKLOAD_C_LONG_CONTEXT": [
+      {
+        "success": true,
+        "elapsed_sec": 2.0352540016174316,
+        "output_snippet": "n be a security risk (cross-origin attacks)\n0.00.023.497 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.023.497 W srv  llama_server: -----------------\n0.00.027.809 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.590.474 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+      }
+    ],
+    "WORKLOAD_D_MULTI_TURN": [
+      {
+        "success": true,
+        "elapsed_sec": 1.9900612831115723,
+        "output_snippet": "n be a security risk (cross-origin attacks)\n0.00.020.261 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.020.262 W srv  llama_server: -----------------\n0.00.028.157 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.593.596 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+      },
+      {
+        "success": true,
+        "elapsed_sec": 1.9880354404449463,
+        "output_snippet": "n be a security risk (cross-origin attacks)\n0.00.024.802 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.024.802 W srv  llama_server: -----------------\n0.00.028.968 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.579.605 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+      }
+    ],
+    "WORKLOAD_E_REPETITIVE": [
+      {
+        "success": true,
+        "elapsed_sec": 1.9507441520690918,
+        "output_snippet": "n be a security risk (cross-origin attacks)\n0.00.019.880 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.019.880 W srv  llama_server: -----------------\n0.00.036.054 I srv    load_model: loading model 'C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463'\n0.00.646.150 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden\n"
+      }
+    ]
+  }
+}
