@@ -4,6 +4,8 @@ use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 use tracing::info;
+#[cfg(target_os = "macos")]
+use tracing::warn;
 
 pub fn spawn_macos_rss_monitor(pid: u32, budget_bytes: u64) -> Result<()> {
     info!(
@@ -15,7 +17,9 @@ pub fn spawn_macos_rss_monitor(pid: u32, budget_bytes: u64) -> Result<()> {
     let running_clone = running.clone();
 
     thread::spawn(move || {
-        let _soft_limit = (budget_bytes as f64 * 0.92) as u64;
+        // soft_limit is only used inside cfg(target_os = "macos"); on other platforms
+        // the variable is intentionally unused and that is suppressed by the leading _.
+        let soft_limit = (budget_bytes as f64 * 0.92) as u64;
         while running_clone.load(Ordering::Relaxed) {
             thread::sleep(Duration::from_millis(50));
             // Working-set memory telemetry check
@@ -43,6 +47,9 @@ pub fn spawn_macos_rss_monitor(pid: u32, budget_bytes: u64) -> Result<()> {
                     }
                 }
             }
+            // Suppress unused-variable warning on non-macOS platforms
+            #[cfg(not(target_os = "macos"))]
+            let _ = soft_limit;
         }
     });
 

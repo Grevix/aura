@@ -1,4 +1,6 @@
-use aura_core::errors::{AuraError, Result};
+#[cfg(windows)]
+use aura_core::errors::AuraError;
+use aura_core::errors::Result;
 use tracing::info;
 
 #[cfg(windows)]

@@ -59,6 +59,16 @@ jobs:
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ubuntu-cargo-tools-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Install Cargo Audit & Cargo Deny
         run: |
           cargo install cargo-audit --locked || true
@@ -124,7 +134,7 @@ jobs:
         run: cargo build --release --workspace
 
       - name: Create Release Package
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             target/release/aura
