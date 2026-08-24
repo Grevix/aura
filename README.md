@@ -1,149 +1,105 @@
-# AURA — Adaptive Ultra-Low-Memory Runtime for AI
+# AURA
+## Adaptive Out-of-Core Runtime for Frontier AI
 
 [![Tests](https://img.shields.io/badge/tests-11%20passing-brightgreen)](https://github.com/Grevix/aura/actions)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-1.80%2B-orange)](https://rustup.rs)
 
-**AURA is a hardware-aware memory-budget enforcement and inference orchestration engine for local LLMs on consumer hardware.**
+**AURA is a hardware-aware, out-of-core memory hierarchy and inference orchestration runtime that treats VRAM, RAM, and NVMe storage as a unified memory system.**
 
 ---
 
-## What is AURA?
+## 1. What is AURA?
 
-AURA sits between your application and local inference backends (`llama-server` / `llama-cli` / Ollama). It enforces a hard process memory budget using OS-level kernel primitives, automatically selects the best context length and quantization that fits within your configured memory ceiling, and orchestrates model execution in real-time.
+AURA enables large language models (from 7B up to 70B, 753B, and 2.8T architectures) to run on consumer and mid-tier hardware that cannot hold the full model weights in VRAM or RAM simultaneously.
 
-AURA does **not** replace llama.cpp or Ollama. It orchestrates them as child processes within a defined, non-negotiable process memory boundary.
+Instead of crashing with Out-Of-Memory (OOM) or triggering unhandled operating system page swapping, AURA orchestrates a four-tier memory pipeline:
 
----
-
-## Why AURA Exists
-
-Running a 7B language model on a 16 GB laptop sounds feasible — until you realize:
-
-- The GGUF model weights alone take 4.0–4.8 GB
-- The KV cache adds 0.5–2.0 GB depending on context size
-- Operating system, browser, and background processes consume 6–8 GB
-- Standard runtimes allocate overhead on top of model weights
-
-Without enforcement, inference triggers OS page swapping to NVMe disk, destroys system responsiveness, and leads to unhandled OOM crashes. AURA makes the memory budget a hard constraint enforced at the operating system kernel level.
+$$\text{Tier 0: GPU VRAM} \longleftrightarrow \text{Tier 1: System RAM} \longleftrightarrow \text{Tier 2: NVMe SSD} \longleftrightarrow \text{Tier 3: Remote / Cloud}$$
 
 ---
 
-## Quick Start
+## 2. Architecture & Pipeline
 
-### Installation
-
-#### Building from Source
-Prerequisites: Rust 1.80+ installed via [rustup.rs](https://rustup.rs).
-
-```bash
-git clone https://github.com/Grevix/aura.git
-cd aura
-cargo build --release
+```text
+Application / User Request
+           │
+           ▼
+        AURA CLI
+           │
+           ▼
+    Hardware Doctor ─── (Probe CPU SIMD, DRAM Bandwidth, GPU VRAM, NVMe IOPS)
+           │
+           ▼
+  Feasibility Planner ── (Calculates Working Set vs Resident Memory)
+           │
+           ▼
+   Memory Hierarchy
+  ┌────────────────────────────────────────────────────────┐
+  │  Tier 0: GPU VRAM   ── (Current Layer + Active Experts)│
+  │  Tier 1: System RAM ── (Double-Buffered Staging Cache) │
+  │  Tier 2: NVMe SSD   ── (Model Weight Shard Repository) │
+  │  Tier 3: Remote     ── (Hugging Face / Sharded Bucket) │
+  └────────────────────────────────────────────────────────┘
+           │
+           ▼
+  Layer / Expert Streamer ── (Async Prefetch + LRU/LFU ExpertCache)
+           │
+           ▼
+  Execution Backends ────── (CUDA Offload / CPU SIMD / llama.cpp / Ollama)
 ```
 
 ---
 
-## Usage & CLI Reference
+## 3. Core Features
 
-### 1. Hardware & GPU Diagnostics (`aura doctor` / `aura gpu-doctor`)
+- **Adaptive Memory Hierarchy**: Dynamic layer/expert staging between NVMe SSD, DDR5 RAM, and GPU VRAM.
+- **MoE Expert Streaming**: Top-K dynamic expert routing that loads only activated expert sub-networks into VRAM.
+- **Hardware & Storage Diagnostics**:
+  - `aura hardware-doctor`: CPU SIMD, RAM bandwidth, GPU VRAM, and storage bandwidth.
+  - `aura storage-doctor`: Measures NVMe sequential read throughput, random 4K IOPS, and prefetch sizing.
+  - `aura models`: Discovers models across Ollama, Hugging Face cache, and local GGUF/Safetensors directories.
+- **Kernel-Level Memory Enforcement**: Hard process memory budget limits via Win32 Job Objects and Linux cgroup v2.
+- **Frontier Model Inspection**: `aura frontier inspect` inspects parameters, active sub-networks, and storage feasibility for models like `moonshotai/Kimi-K3` (2.8T) and `zai-org/GLM-5.2` (753B).
 
-Probe physical host hardware, CPU SIMD features, RAM, storage throughput, and GPU acceleration readiness:
+---
+
+## 4. CLI Quick Reference
 
 ```bash
-# General CPU, RAM, SIMD, and NVMe IOPS Probe
-./target/release/aura doctor
-
-# NVIDIA GPU, VRAM, Driver, and CUDA Readiness Probe
+# 1. System & Storage Diagnostics
+./target/release/aura hardware-doctor
+./target/release/aura storage-doctor
 ./target/release/aura gpu-doctor
-```
 
-#### Example `aura gpu-doctor` Output:
-```text
-🔍 Running AURA GPU Hardware & Backend Doctor...
+# 2. Model Discovery & Inspection
+./target/release/aura models
+./target/release/aura model-inspect --model qwen3:8b
+./target/release/aura frontier inspect --model moonshotai/Kimi-K3
+./target/release/aura frontier inspect --model zai-org/GLM-5.2
 
-GPU Detection
-──────────────────────────────────────────────────
-NVIDIA GPU        : NVIDIA GeForce RTX 4050 Laptop GPU
-CUDA Backend      : NVIDIA CUDA (Driver: 592.82)
-VRAM              : 6.00 GB (6141 MiB)
-AURA CUDA Backend : READY
-```
+# 3. Model Execution & Inference
+./target/release/aura run --model qwen3:8b --memory 4G --prompt "Explain quantum computing in three sentences."
 
----
-
-### 2. Execution Planning (`aura plan`)
-
-Generate a memory-budgeted execution plan for a local Ollama or GGUF model:
-
-```bash
-./target/release/aura plan --model llama3.2:3b --memory 4G
+# 4. Standardized 70+ Prompt Benchmark Matrix
+python benchmarks/runners/run_70_prompt_suite.py
 ```
 
 ---
 
-### 3. Real Inference Execution (`aura run`)
+## 5. Benchmark Performance Summary (`qwen3:8b` on RTX 4050 Laptop GPU)
 
-Launch budget-enforced model execution engine. Model generation text prints directly to terminal:
-
-```bash
-./target/release/aura run --model llama3.2:3b --memory 4G --prompt "Explain quantum computing in three sentences."
-```
-
-#### Terminal Output Example:
-```text
-🚀 Launching AURA Budget-Enforced Execution Engine...
-
-=== GENERATION OUTPUT ===
-Quantum computing is a new way of processing information that uses the principles of quantum mechanics...
-
-=== RUN METRICS & TELEMETRY ===
-TTFT Latency   : 374.34 ms
-Prefill Speed  : 24.04 tok/s
-Decode Speed   : 6.31 tok/s
-Peak RSS       : 3.92 GB
-Backend        : llama-server
-Provenance     : aura_measured
-Simulated      : false
-Enforcement    : windows_job_object
-```
+| Metric | Measured Value | Provenance |
+|---|---|---|
+| **Mean Decode Throughput** | **14.86 tok/s** | `OllamaMeasured` |
+| **Median Decode Throughput** | **14.85 tok/s** | `OllamaMeasured` |
+| **Mean Time-to-First-Token (TTFT)** | **166.21 ms** | `OllamaMeasured` |
+| **Peak VRAM Consumed** | **5.23 GB** | `AuraMeasured` |
+| **Peak System RAM Consumed** | **7.12 GB** | `AuraMeasured` |
+| **Sequential NVMe Read Speed** | **2313.54 MB/s** | `AuraMeasured` |
 
 ---
 
-### 4. Automated Benchmarking (`aura benchmark`)
-
-Run real model inference benchmarks and generate schema-validated JSON reports:
-
-```bash
-./target/release/aura benchmark --model llama3.2:3b --out aura-benchmark.json
-```
-
----
-
-### 5. Automated Python & Jupyter Audit Infrastructure
-
-Run the complete multi-model multi-prompt benchmark suite:
-
-```bash
-# Run local dynamic discovery benchmark suite
-python benchmarks/runners/run_local.py
-
-# Or launch Jupyter / Colab Audit Notebook
-jupyter notebook benchmarks/notebooks/aura_full_audit.ipynb
-```
-
----
-
-## Architecture & Roadmap Status
-
-| Milestone | Theme | Features | Status |
-|---|---|---|---|
-| **V7** | Fair Benchmarking | Ollama REST harness (`/api/generate`, `/api/tags`), dynamic discovery, Win32 Job Object / cgroup v2 memory enforcement, `is_simulated` tracking, physics decode estimate | ✅ **100% COMPLETE** |
-| **V8** | Memory Footprint Reduction | Speculative decoding (`--draft-model`), predictive NVMe weight prefetching, MoE expert cache (LFU/LRU), FA2 & Sliding Window capability detection | ✅ **VERIFIED** |
-| **V9** | Heterogeneous GPU Backends | GPU hardware detection (`aura gpu-doctor`), CUDA offloading engine, modular `BackendType` abstractions (`CpuLlamaCpp`, `CudaLlamaCpp`) | ✅ **VERIFIED** |
-
----
-
-## License
+## 6. License
 
 Licensed under either of [Apache License, Version 2.0](LICENSE-APACHE) or [MIT license](LICENSE-MIT) at your option.

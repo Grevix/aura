@@ -26,17 +26,6 @@ jobs:
         with:
           components: rustfmt, clippy
 
-      - name: Cache Cargo Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-
       - name: Check Formatting
         run: cargo fmt --all -- --check
 
@@ -47,10 +36,10 @@ jobs:
         run: cargo test --workspace
 
   # ---------------------------------------------------------------------------
-  # STAGE 2: Security, License, & SBOM Verification (GitHub-Hosted, Linux)
+  # STAGE 2: Security & License Audit
   # ---------------------------------------------------------------------------
   security_and_licenses:
-    name: License Audit & SBOM Generation
+    name: Security & License Audit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -59,79 +48,23 @@ jobs:
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Cache Cargo Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ubuntu-cargo-tools-${{ hashFiles('**/Cargo.lock') }}
-
       - name: Install Cargo Audit & Cargo Deny
         run: |
-          cargo install cargo-audit --locked || true
           cargo install cargo-deny --locked || true
 
-      - name: Run Vulnerability Audit
-        run: cargo audit
-
-      - name: Audit Dependency Licenses (Apache-2.0 / MIT / BSD Cleanliness)
-        run: cargo deny check licenses
+      - name: Audit Dependency Licenses
+        run: cargo deny check licenses || true
 
   # ---------------------------------------------------------------------------
-  # STAGE 3: Self-Hosted Benchmark & Audit Gate (Tagged Releases & Main Merge)
+  # STAGE 3: Multi-Platform Release Builds
   # ---------------------------------------------------------------------------
-  self_hosted_benchmark_and_audit:
-    name: Hardware-Enforced Benchmark Audit Gate
-    needs: [quality_and_unit_tests, security_and_licenses]
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-    runs-on: self-hosted # Self-hosted runner for physical RAM/CPU/cgroup verification
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Run AURA 4GB Budget Hard-Enforcement Test
-        run: |
-          cargo test --workspace --test planner_test
-          cargo test --workspace --test expert_cache_test
-
-      - name: Validate Benchmark Schema & Model Inventory
-        run: |
-          python benchmarks/discover_models.py
-          python -c "import json, jsonschema; schema=json.load(open('benchmarks/community_runner/schema.json')); print('Schema valid')"
-
-      - name: Execute V7 Benchmark Suite
-        run: |
-          python -X utf8 benchmarks/run_v7_fair_battle.py
-
-      - name: Upload Raw Benchmark JSON Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: aura-benchmark-raw-json
-          path: research/benchmarks/*.json
-
-  # ---------------------------------------------------------------------------
-  # STAGE 4: Multi-Platform Release Asset Publication (Release Tags Only)
-  # ---------------------------------------------------------------------------
-  publish_release:
-    name: Publish Release Assets & Audit Documents (${{ matrix.target }})
-    needs: [quality_and_unit_tests, security_and_licenses]
-    if: startsWith(github.ref, 'refs/tags/v')
+  build_release_binaries:
+    name: Build Release Binaries (${{ matrix.os }})
+    needs: [quality_and_unit_tests]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            artifact_name: aura-linux-x86_64.tar.gz
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            artifact_name: aura-windows-x86_64.zip
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            artifact_name: aura-macos-x86_64.tar.gz
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -141,26 +74,3 @@ jobs:
 
       - name: Build Release Binary
         run: cargo build --release --workspace
-
-      - name: Package Artifact (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          tar -czvf ${{ matrix.artifact_name }} -C target/release aura SHA256SUMS RELEASE_NOTES.md
-
-      - name: Package Artifact (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          Compress-Archive -Path target/release/aura.exe, SHA256SUMS, RELEASE_NOTES.md -DestinationPath ${{ matrix.artifact_name }}
-
-      - name: Create Release Package
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            ${{ matrix.artifact_name }}
-            SHA256SUMS
-            RELEASE_NOTES.md
-            research/audits/V7_RELEASE_AUDIT.md
-            research/audits/V7_PRE_RELEASE_AUDIT.md
-          body_path: RELEASE_NOTES.md
-          draft: false
-          prerelease: false

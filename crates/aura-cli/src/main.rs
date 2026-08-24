@@ -6,9 +6,9 @@ use clap::{Parser, Subcommand};
 #[command(
     name = "aura",
     author = "AURA Systems Engineering Team",
-    version = "0.10.0",
-    about = "AURA — Adaptive Ultra-Low-Memory Runtime for AI",
-    long_about = "AURA is a hardware-aware, memory-budgeted local inference optimizer and orchestration engine."
+    version = "0.11.0",
+    about = "AURA — Adaptive Out-of-Core Runtime for Frontier AI",
+    long_about = "AURA is a hardware-aware, out-of-core memory hierarchy and inference orchestration engine for large language models."
 )]
 struct Cli {
     #[command(subcommand)]
@@ -26,6 +26,12 @@ enum Commands {
     /// Probe GPU hardware acceleration, VRAM, drivers, and CUDA capabilities
     GpuDoctor,
 
+    /// Probe NVMe storage sequential/random bandwidth, latency, and streaming recommendations
+    StorageDoctor,
+
+    /// Unified discovery across local Ollama models, Hugging Face cache, and Frontier architectures
+    Models,
+
     /// List all discovered local models from Ollama repository
     OllamaList,
 
@@ -34,6 +40,12 @@ enum Commands {
         /// Model identifier or tag (e.g. qwen3:8b, moonshotai/Kimi-K3, zai-org/GLM-5.2)
         #[arg(short = 'm', long)]
         model: String,
+    },
+
+    /// Frontier model inspection and out-of-core streaming execution suite
+    Frontier {
+        #[command(subcommand)]
+        subcmd: FrontierCommands,
     },
 
     /// Launch experimental large-model execution or feasibility evaluation
@@ -104,6 +116,20 @@ enum Commands {
 }
 
 #[derive(Subcommand)]
+enum FrontierCommands {
+    /// Inspect frontier model architecture, expert count, and memory feasibility
+    Inspect {
+        #[arg(short = 'm', long)]
+        model: String,
+    },
+    /// Launch frontier model out-of-core streaming execution path
+    Run {
+        #[arg(short = 'm', long)]
+        model: String,
+    },
+}
+
+#[derive(Subcommand)]
 enum ExperimentalCommands {
     /// Evaluate resource feasibility and run experimental large-model path
     Run {
@@ -128,12 +154,26 @@ fn main() {
         Commands::GpuDoctor => {
             commands::gpu_doctor::execute_gpu_doctor();
         }
+        Commands::StorageDoctor => {
+            commands::storage_doctor::execute_storage_doctor();
+        }
+        Commands::Models => {
+            commands::models_list::execute_models_list();
+        }
         Commands::OllamaList => {
             commands::ollama_list::execute_ollama_list();
         }
         Commands::ModelInspect { model } => {
             commands::model_inspect::execute_model_inspect(&model);
         }
+        Commands::Frontier { subcmd } => match subcmd {
+            FrontierCommands::Inspect { model } => {
+                commands::frontier::execute_frontier_inspect(&model);
+            }
+            FrontierCommands::Run { model } => {
+                commands::frontier::execute_frontier_run(&model);
+            }
+        },
         Commands::Experimental { subcmd } => match subcmd {
             ExperimentalCommands::Run { model } => {
                 commands::experimental::execute_experimental_run(&model);
