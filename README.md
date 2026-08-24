@@ -224,8 +224,8 @@ Please see [`CONTRIBUTING.md`](file:///c:/Users/Aaryan%20Rawat/Pictures/AURA/CON
 #### Q: How is AURA different from Ollama?
 **A:** Ollama focuses on developer convenience and packaging. AURA focuses on **kernel-level memory-budget enforcement**, physical storage diagnostics, context auto-tuning, and multi-tier out-of-core streaming for constrained hardware.
 
-#### Q: Can AURA run a 70B model on a 4 GB RAM laptop?
-**A:** AURA can stream a 70B model shard-by-shard using out-of-core scheduling, but execution throughput is physically bounded by your SSD's read bandwidth ($W/B$). AURA will honestly predict your token latency before you start rather than fabricating impossible claims.
+#### Q: Can AURA run a 10B model on a 4 GB RAM laptop?
+**A:** AURA can stream a 10B model shard-by-shard using out-of-core scheduling, but execution throughput is physically bounded by your SSD's read bandwidth ($W/B$). AURA will honestly predict your token latency before you start rather than fabricating impossible claims.
 
 #### Q: How does AURA guarantee that my system will not crash with OOM?
 **A:** AURA attaches child backend processes directly to OS kernel budget primitives (**Win32 Job Objects** with `JOB_OBJECT_LIMIT_PROCESS_MEMORY` on Windows and **cgroup v2** `MemoryMax` on Linux).
