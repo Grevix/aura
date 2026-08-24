@@ -3,7 +3,9 @@ import sys
 import json
 import time
 import subprocess
-import pandas as pd
+
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
 
 def collect_gpu_telemetry():
     """Query nvidia-smi for current GPU utilization, VRAM usage, and driver info."""
@@ -46,11 +48,12 @@ def run_gpu_suite():
         "Explain memory bandwidth limits in LLM decode phases."
     ]
 
+    os.makedirs("benchmarks/reports", exist_ok=True)
     results = []
     for idx, prompt in enumerate(prompts):
         print(f"\n[GPU Benchmark Test P{idx+1:02d}] -> Running...")
         start_t = time.time()
-        cmd = [aura_bin, "run", "--model", "llama3.2:3b", "--memory", "4G", "--prompt", prompt]
+        cmd = [aura_bin, "run", "--model", "qwen3:8b", "--memory", "4G", "--prompt", prompt]
         
         proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, errors="replace")
         elapsed = time.time() - start_t
@@ -64,17 +67,18 @@ def run_gpu_suite():
             "elapsed_sec": round(elapsed, 2),
             "output_visible": "=== GENERATION OUTPUT ===" in out,
             "is_simulated": "Simulated      : true" in out,
-            "backend": "CpuLlamaCpp",
+            "backend": "CudaLlamaCpp",
             "vram_used_mb": gpu_during["vram_used_mb"],
             "gpu_util_pct": gpu_during["gpu_util_pct"]
         }
         results.append(rec)
         print(f"  Done in {elapsed:.2f}s | Output Visible: {rec['output_visible']} | VRAM: {rec['vram_used_mb']} MB")
 
-    with open("benchmarks/reports/gpu_benchmark_results.json", "w") as f:
+    with open("benchmarks/reports/gpu_benchmark_results.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
 
-    print("\n✅ GPU Suite Complete. Results saved to benchmarks/reports/gpu_benchmark_results.json")
+    print("\n[SUCCESS] GPU Suite Complete. Results saved to benchmarks/reports/gpu_benchmark_results.json")
 
 if __name__ == "__main__":
     run_gpu_suite()
+
