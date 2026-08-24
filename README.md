@@ -1,25 +1,16 @@
 # AURA
-## Adaptive Out-of-Core Runtime for Frontier AI
+## Adaptive Memory-Aware Runtime for LLM Inference
 
 [![Tests](https://img.shields.io/badge/tests-11%20passing-brightgreen)](https://github.com/Grevix/aura/actions)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-1.80%2B-orange)](https://rustup.rs)
 
-**AURA is a hardware-aware, out-of-core memory hierarchy and inference orchestration runtime that treats VRAM, RAM, and NVMe storage as a unified memory system.**
+> **Release Statement**:  
+> AURA V12 is a release candidate for adaptive, memory-aware local LLM inference. Its currently verified execution path supports real local inference through Ollama/llama.cpp, GPU offload on NVIDIA CUDA hardware, CPU execution, memory-budget enforcement, model discovery, telemetry, and standardized benchmark execution. Frontier-scale models such as GLM-5.2 and Kimi-K3 are currently classified as research/experimental targets rather than verified full-local workloads. Their out-of-core execution architecture is under active development and is not represented as successfully executed until reproducible end-to-end inference is demonstrated.
 
 ---
 
-## 1. What is AURA?
-
-AURA enables large language models (from 7B up to 70B, 753B, and 2.8T architectures) to run on consumer and mid-tier hardware that cannot hold the full model weights in VRAM or RAM simultaneously.
-
-Instead of crashing with Out-Of-Memory (OOM) or triggering unhandled operating system page swapping, AURA orchestrates a four-tier memory pipeline:
-
-$$\text{Tier 0: GPU VRAM} \longleftrightarrow \text{Tier 1: System RAM} \longleftrightarrow \text{Tier 2: NVMe SSD} \longleftrightarrow \text{Tier 3: Remote / Cloud}$$
-
----
-
-## 2. Architecture & Pipeline
+## 1. Verified Architecture & Pipeline
 
 ```text
 Application / User Request
@@ -31,40 +22,37 @@ Application / User Request
     Hardware Doctor ─── (Probe CPU SIMD, DRAM Bandwidth, GPU VRAM, NVMe IOPS)
            │
            ▼
-  Feasibility Planner ── (Calculates Working Set vs Resident Memory)
+  Feasibility Planner ── (Calculates Working Set vs Resident Memory Budget)
            │
            ▼
-   Memory Hierarchy
-  ┌────────────────────────────────────────────────────────┐
-  │  Tier 0: GPU VRAM   ── (Current Layer + Active Experts)│
-  │  Tier 1: System RAM ── (Double-Buffered Staging Cache) │
-  │  Tier 2: NVMe SSD   ── (Model Weight Shard Repository) │
-  │  Tier 3: Remote     ── (Hugging Face / Sharded Bucket) │
-  └────────────────────────────────────────────────────────┘
+  Memory Enforcement ── (Win32 Job Objects / Linux cgroup v2)
            │
            ▼
-  Layer / Expert Streamer ── (Async Prefetch + LRU/LFU ExpertCache)
+  Execution Backends ── (Native llama-server child process / Ollama REST API)
            │
            ▼
-  Execution Backends ────── (CUDA Offload / CPU SIMD / llama.cpp / Ollama)
+    Terminal Output ─── (Real-time Token Rendering + Provenance Telemetry)
 ```
 
 ---
 
-## 3. Core Features
+## 2. Core Capabilities & Verification Status
 
-- **Adaptive Memory Hierarchy**: Dynamic layer/expert staging between NVMe SSD, DDR5 RAM, and GPU VRAM.
-- **MoE Expert Streaming**: Top-K dynamic expert routing that loads only activated expert sub-networks into VRAM.
-- **Hardware & Storage Diagnostics**:
-  - `aura hardware-doctor`: CPU SIMD, RAM bandwidth, GPU VRAM, and storage bandwidth.
-  - `aura storage-doctor`: Measures NVMe sequential read throughput, random 4K IOPS, and prefetch sizing.
-  - `aura models`: Discovers models across Ollama, Hugging Face cache, and local GGUF/Safetensors directories.
-- **Kernel-Level Memory Enforcement**: Hard process memory budget limits via Win32 Job Objects and Linux cgroup v2.
-- **Frontier Model Inspection**: `aura frontier inspect` inspects parameters, active sub-networks, and storage feasibility for models like `moonshotai/Kimi-K3` (2.8T) and `zai-org/GLM-5.2` (753B).
+| Feature / Subsystem | Status | Description & Evidence |
+|---|---|---|
+| **Process-Enforced Inference** | **VERIFIED** | Spawns `llama-server.exe` child process under Win32 Job Object / Linux cgroup memory limit |
+| **GPU Offloading (CUDA)** | **VERIFIED** | Automatic NVIDIA GeForce RTX 4050 detection & layer offload with 2.57x–3.23x speedup |
+| **CPU SIMD Execution** | **VERIFIED** | Multi-threaded AVX2/AVX-512 CPU execution path for non-GPU environments |
+| **Hardware & Storage Doctor** | **VERIFIED** | `aura hardware-doctor` and `aura storage-doctor` (2313.54 MB/s NVMe read) |
+| **Unified Model Discovery** | **VERIFIED** | `aura models` and `aura ollama-list` dynamic discovery across 15 local models |
+| **Standardized 70-Prompt Suite** | **VERIFIED** | 70/70 real prompts executed on `qwen3:8b` (14.86 tok/s mean decode throughput) |
+| **Frontier Model Safeguards** | **VERIFIED** | `aura frontier inspect` evaluates 2.8T MoE and 753B structures without fatal OOM |
+| **Qwen3.8-27B Multimodal** | **ARCHITECTURALLY SUPPORTED** | Target for layer streaming; pending empirical end-to-end verification |
+| **Kimi-K3 / GLM-5.2 Full Local**| **EXPERIMENTAL / NOT FEASIBLE LOCAL** | Evaluated via Colab sharding notebooks; ~1.5 TB checkpoints require cluster resources |
 
 ---
 
-## 4. CLI Quick Reference
+## 3. CLI Quick Reference
 
 ```bash
 # 1. System & Storage Diagnostics
@@ -72,14 +60,14 @@ Application / User Request
 ./target/release/aura storage-doctor
 ./target/release/aura gpu-doctor
 
-# 2. Model Discovery & Inspection
+# 2. Unified Model Discovery & Inspection
 ./target/release/aura models
 ./target/release/aura model-inspect --model qwen3:8b
 ./target/release/aura frontier inspect --model moonshotai/Kimi-K3
 ./target/release/aura frontier inspect --model zai-org/GLM-5.2
 
-# 3. Model Execution & Inference
-./target/release/aura run --model qwen3:8b --memory 4G --prompt "Explain quantum computing in three sentences."
+# 3. Model Execution & Inference (Real Token Rendering)
+./target/release/aura run --model qwen3:8b --memory 4G --prompt "What is quantum computing?"
 
 # 4. Standardized 70+ Prompt Benchmark Matrix
 python benchmarks/runners/run_70_prompt_suite.py
@@ -87,16 +75,27 @@ python benchmarks/runners/run_70_prompt_suite.py
 
 ---
 
-## 5. Benchmark Performance Summary (`qwen3:8b` on RTX 4050 Laptop GPU)
+## 4. Empirical Benchmark Performance (`qwen3:8b` on RTX 4050 Laptop GPU)
 
-| Metric | Measured Value | Provenance |
-|---|---|---|
-| **Mean Decode Throughput** | **14.86 tok/s** | `OllamaMeasured` |
-| **Median Decode Throughput** | **14.85 tok/s** | `OllamaMeasured` |
-| **Mean Time-to-First-Token (TTFT)** | **166.21 ms** | `OllamaMeasured` |
-| **Peak VRAM Consumed** | **5.23 GB** | `AuraMeasured` |
-| **Peak System RAM Consumed** | **7.12 GB** | `AuraMeasured` |
-| **Sequential NVMe Read Speed** | **2313.54 MB/s** | `AuraMeasured` |
+```text
+Model              : qwen3:8b (8.2B GGUF Q4_K_M)
+Total Prompts      : 70 / 70 Standardized Prompts
+Pass Rate          : 100% (70 Passed / 0 Failed)
+Mean Decode Speed  : 14.86 tok/s
+Median Decode Speed: 14.85 tok/s
+Mean TTFT Latency  : 166.21 ms
+Peak VRAM Consumed : 5.23 GB
+Peak RAM Consumed  : 7.12 GB
+Sequential Read    : 2313.54 MB/s (PCIe Gen4 NVMe)
+Provenance         : OllamaMeasured / AuraMeasured (is_simulated = false)
+```
+
+---
+
+## 5. Official Hardware Profiles
+
+- **Profile A**: [`profiles/debian_16gb_small_gpu.json`](file:///c:/Users/Aaryan%20Rawat/Pictures/AURA/profiles/debian_16gb_small_gpu.json) (16 GB RAM + RTX 4050 GPU -> `GPU_OFFLOAD / CUDA`)
+- **Profile B**: [`profiles/debian_192gb_cpu.json`](file:///c:/Users/Aaryan%20Rawat/Pictures/AURA/profiles/debian_192gb_cpu.json) (192 GB RAM + No GPU -> `CPU_OFFLOAD / RAM_RESIDENT`)
 
 ---
 
