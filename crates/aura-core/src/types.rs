@@ -124,6 +124,107 @@ impl std::fmt::Display for EnforcementMechanism {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum BackendType {
+    CpuLlamaCpp,
+    CudaLlamaCpp,
+    VulkanLlamaCpp,
+    DirectMLLlamaCpp,
+    MetalLlamaCpp,
+    RemoteBackend,
+}
+
+impl std::fmt::Display for BackendType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BackendType::CpuLlamaCpp => write!(f, "cpu_llama_cpp"),
+            BackendType::CudaLlamaCpp => write!(f, "cuda_llama_cpp"),
+            BackendType::VulkanLlamaCpp => write!(f, "vulkan_llama_cpp"),
+            BackendType::DirectMLLlamaCpp => write!(f, "directml_llama_cpp"),
+            BackendType::MetalLlamaCpp => write!(f, "metal_llama_cpp"),
+            BackendType::RemoteBackend => write!(f, "remote_backend"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum MetricProvenance {
+    AuraMeasured,
+    OllamaMeasured,
+    PlannerEstimated,
+    Simulated,
+}
+
+impl std::fmt::Display for MetricProvenance {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MetricProvenance::AuraMeasured => write!(f, "aura_measured"),
+            MetricProvenance::OllamaMeasured => write!(f, "ollama_measured"),
+            MetricProvenance::PlannerEstimated => write!(f, "planner_estimated"),
+            MetricProvenance::Simulated => write!(f, "simulated"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum SpeculativeStatus {
+    Active {
+        draft_model: String,
+        speedup_estimate: f64,
+    },
+    Disabled,
+    Infeasible {
+        reason: String,
+    },
+}
+
+impl std::fmt::Display for SpeculativeStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SpeculativeStatus::Active {
+                draft_model,
+                speedup_estimate,
+            } => {
+                write!(
+                    f,
+                    "Active (draft: {}, speedup: {:.1}x)",
+                    draft_model, speedup_estimate
+                )
+            }
+            SpeculativeStatus::Disabled => write!(f, "Disabled"),
+            SpeculativeStatus::Infeasible { reason } => write!(f, "Infeasible ({})", reason),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum FeatureStatus {
+    Active,
+    Unavailable,
+    Disabled,
+}
+
+impl std::fmt::Display for FeatureStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            FeatureStatus::Active => write!(f, "Active"),
+            FeatureStatus::Unavailable => write!(f, "Unavailable"),
+            FeatureStatus::Disabled => write!(f, "Disabled"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HardwareCapabilities {
+    pub has_cuda: bool,
+    pub has_vulkan: bool,
+    pub has_directml: bool,
+    pub has_metal: bool,
+    pub vram_bytes: Option<u64>,
+    pub has_fa2: bool,
+    pub has_sliding_window: bool,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExecutionPlan {
     pub model_name: String,
@@ -142,4 +243,8 @@ pub struct ExecutionPlan {
     pub feasibility_notes: String,
     pub enforcement_mechanism: EnforcementMechanism,
     pub recommended_flags: Vec<String>,
+    pub selected_backend: BackendType,
+    pub speculative_status: SpeculativeStatus,
+    pub fa2_status: FeatureStatus,
+    pub sliding_window_status: FeatureStatus,
 }

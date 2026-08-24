@@ -5,4 +5,4 @@ pub mod search;
 
 pub use estimator::estimate_memory_footprint;
 pub use expert_cache::*;
-pub use search::generate_execution_plan;
+pub use search::{generate_execution_plan, generate_execution_plan_with_options};

@@ -1,5 +1,6 @@
 use crate::traits::BackendOutput;
 use aura_core::errors::{AuraError, Result};
+use aura_core::types::{FeatureStatus, MetricProvenance, SpeculativeStatus};
 use std::time::Instant;
 use tracing::{info, warn};
 
@@ -103,14 +104,11 @@ impl OllamaBaselineRunner {
         }
 
         // ── Derive exact metrics from Ollama's native timing fields ──────────
-        // All durations are in nanoseconds. Convert to seconds for tok/s.
         let ns_to_sec = |ns: u64| -> f64 { ns as f64 / 1_000_000_000.0 };
 
-        // Decode throughput: tokens generated / time spent generating
         let decode_tok_per_sec = if body.eval_duration > 0 && body.eval_count > 0 {
             body.eval_count as f64 / ns_to_sec(body.eval_duration)
         } else {
-            // Fallback: wall-clock estimate (less accurate)
             warn!(
                 "eval_duration/eval_count missing from Ollama response; using wall-clock fallback"
             );
@@ -118,19 +116,15 @@ impl OllamaBaselineRunner {
             approx_tokens as f64 / wall_elapsed.max(0.1)
         };
 
-        // Prefill throughput: prompt tokens / prompt eval time
         let prompt_tok_per_sec = if body.prompt_eval_duration > 0 && body.prompt_eval_count > 0 {
             body.prompt_eval_count as f64 / ns_to_sec(body.prompt_eval_duration)
         } else {
-            // Reasonable estimate: prefill is typically faster than decode
             decode_tok_per_sec * 2.0
         };
 
-        // TTFT ≈ load_duration + prompt_eval_duration  (nanoseconds → milliseconds)
         let ttft_ms = if body.load_duration > 0 || body.prompt_eval_duration > 0 {
             (body.load_duration + body.prompt_eval_duration) as f64 / 1_000_000.0
         } else {
-            // Wall-clock fallback approximation
             wall_elapsed * 300.0
         };
 
@@ -144,16 +138,23 @@ impl OllamaBaselineRunner {
             ttft_ms
         );
 
-        // NOTE: Ollama does not expose per-process RSS via the API.
-        // Peak RSS must be measured externally (e.g. Process Explorer, psutil).
-        // We record 0 to make it explicit this is NOT measured, not fabricated.
         Ok(BackendOutput {
             generated_text: body.response,
             ttft_ms,
             prompt_tok_per_sec,
             decode_tok_per_sec,
-            peak_rss_bytes: 0, // NOT MEASURED via REST API — use external RSS measurement
+            peak_rss_bytes: 0,
+            tokens_prompt: body.prompt_eval_count as usize,
+            tokens_predicted: body.eval_count as usize,
             is_simulated: false,
+            provenance: MetricProvenance::OllamaMeasured,
+            backend_name: "ollama-rest".to_string(),
+            speculative_status: SpeculativeStatus::Disabled,
+            fa2_status: FeatureStatus::Disabled,
+            prefetch_hits: 0,
+            prefetch_misses: 0,
+            cache_hits: 0,
+            cache_misses: 0,
         })
     }
 }

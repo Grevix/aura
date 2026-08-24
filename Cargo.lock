@@ -83,7 +83,10 @@ name = "aura-backends"
 version = "0.1.0"
 dependencies = [
  "aura-core",
+ "aura-hardware",
+ "aura-memory",
  "aura-model",
+ "aura-planner",
  "dirs",
  "reqwest",
  "serde",

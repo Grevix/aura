@@ -45,6 +45,10 @@ enum Commands {
         #[arg(short = 'b', long, default_value = "4G")]
         memory: String,
 
+        /// Optional draft model for speculative decoding
+        #[arg(short = 'd', long)]
+        draft_model: Option<String>,
+
         /// Prompt string for generation
         #[arg(
             short,
@@ -96,9 +100,10 @@ fn main() {
         Commands::Run {
             model,
             memory,
+            draft_model,
             prompt,
         } => {
-            commands::run::execute_run(&model, &memory, &prompt);
+            commands::run::execute_run(&model, &memory, draft_model.as_deref(), &prompt);
         }
         Commands::Benchmark {
             model,

@@ -7,7 +7,10 @@ authors.workspace = true
 
 [dependencies]
 aura-core.workspace = true
+aura-hardware.workspace = true
+aura-memory.workspace = true
 aura-model.workspace = true
+aura-planner.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tracing.workspace = true
