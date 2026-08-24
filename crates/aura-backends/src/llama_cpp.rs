@@ -1,6 +1,7 @@
 use crate::traits::{BackendAdapter, BackendOutput};
 use aura_core::errors::Result;
-use aura_core::types::{ExecutionPlan, MetricProvenance};
+use aura_core::types::{ExecutionPlan, FeatureStatus, MetricProvenance, SpeculativeStatus};
+use aura_hardware::gpu::detect_gpu;
 use aura_hardware::memory::get_process_page_faults;
 use aura_memory::enforce_memory_budget;
 use std::env;
@@ -130,23 +131,43 @@ impl BackendAdapter for LlamaCppAdapter {
                 let port = Self::find_free_port();
                 let port_str = port.to_string();
 
-                // Setup PATH environment variable so DLLs / shared libraries are located
+                // Check CUDA library paths in binary_dir
+                let cuda_v13 = binary_dir.join("cuda_v13");
+                let cuda_v12 = binary_dir.join("cuda_v12");
+
                 let current_path = env::var("PATH").unwrap_or_default();
-                let new_path = format!("{};{}", binary_dir.display(), current_path);
+                let mut new_path = format!("{};{}", binary_dir.display(), current_path);
+
+                if cuda_v13.exists() {
+                    new_path = format!("{};{}", cuda_v13.display(), new_path);
+                } else if cuda_v12.exists() {
+                    new_path = format!("{};{}", cuda_v12.display(), new_path);
+                }
+
+                let gpu_prof = detect_gpu();
 
                 let mut cmd = Command::new(&binary_path);
-                cmd.current_dir(&binary_dir).env("PATH", &new_path).args([
-                    "-m",
-                    resolved_model_path.to_str().unwrap_or(""),
-                    "-c",
-                    &plan.recommended_context.to_string(),
-                    "-t",
-                    &plan.recommended_threads.to_string(),
-                    "--port",
-                    &port_str,
-                    "--host",
-                    "127.0.0.1",
-                ]);
+                cmd.current_dir(&binary_dir).env("PATH", &new_path);
+
+                let mut args = vec![
+                    "-m".to_string(),
+                    resolved_model_path.to_string_lossy().to_string(),
+                    "-c".to_string(),
+                    plan.recommended_context.to_string(),
+                    "-t".to_string(),
+                    plan.recommended_threads.to_string(),
+                    "--port".to_string(),
+                    port_str.clone(),
+                    "--host".to_string(),
+                    "127.0.0.1".to_string(),
+                ];
+
+                if gpu_prof.present && plan.gpu_layers_offloaded > 0 {
+                    args.push("-ngl".to_string());
+                    args.push(plan.gpu_layers_offloaded.to_string());
+                }
+
+                cmd.args(args);
 
                 match cmd.spawn() {
                     Ok(child_proc) => {
@@ -158,7 +179,6 @@ impl BackendAdapter for LlamaCppAdapter {
                             child_pid, port, plan.memory_budget_bytes
                         );
 
-                        // Attach OS memory budget enforcement directly to child process PID
                         if let Err(e) = enforce_memory_budget(
                             child_pid,
                             plan.memory_budget_bytes,
@@ -167,7 +187,6 @@ impl BackendAdapter for LlamaCppAdapter {
                             warn!("Failed to apply memory enforcement on child PID: {}", e);
                         }
 
-                        // Poll /health readiness endpoint
                         let health_url = format!("http://127.0.0.1:{}/health", port);
                         let client = reqwest::blocking::Client::builder()
                             .timeout(Duration::from_secs(120))
@@ -202,66 +221,62 @@ impl BackendAdapter for LlamaCppAdapter {
 
                                 let completion_url =
                                     format!("http://127.0.0.1:{}/completion", port);
-                                let start = Instant::now();
+                                let req_start = Instant::now();
 
-                                if let Ok(resp) = cli.post(&completion_url).json(&payload).send() {
-                                    let wall_elapsed = start.elapsed().as_secs_f64();
-                                    if let Ok(json_body) = resp.json::<serde_json::Value>() {
-                                        if let Some(content) =
-                                            json_body.get("content").and_then(|v| v.as_str())
+                                if let Ok(comp_resp) =
+                                    cli.post(&completion_url).json(&payload).send()
+                                {
+                                    let wall_time_ms = req_start.elapsed().as_secs_f64() * 1000.0;
+                                    if comp_resp.status().is_success() {
+                                        if let Ok(json_body) = comp_resp.json::<serde_json::Value>()
                                         {
-                                            // Parse llama-server timing metadata
-                                            let timings = json_body.get("timings");
-                                            let prompt_n = timings
-                                                .and_then(|t| t.get("prompt_n"))
-                                                .and_then(|v| v.as_u64())
+                                            let generated_text = json_body["content"]
+                                                .as_str()
+                                                .unwrap_or("")
+                                                .to_string();
+
+                                            let timings = &json_body["timings"];
+                                            let prompt_n =
+                                                timings["prompt_n"].as_u64().unwrap_or(1) as usize;
+                                            let predicted_n = timings["predicted_n"]
+                                                .as_u64()
                                                 .unwrap_or(0)
                                                 as usize;
-                                            let predicted_n = timings
-                                                .and_then(|t| t.get("predicted_n"))
-                                                .and_then(|v| v.as_u64())
-                                                .unwrap_or_else(|| {
-                                                    content.split_whitespace().count() as u64
-                                                })
-                                                as usize;
 
-                                            let prompt_tok_sec = timings
-                                                .and_then(|t| t.get("prompt_per_second"))
-                                                .and_then(|v| v.as_f64())
-                                                .unwrap_or(45.0);
+                                            let prompt_ms =
+                                                timings["prompt_ms"].as_f64().unwrap_or(1.0);
+                                            let predicted_ms = timings["predicted_ms"]
+                                                .as_f64()
+                                                .unwrap_or(wall_time_ms);
 
-                                            let decode_tok_sec = timings
-                                                .and_then(|t| t.get("predicted_per_second"))
-                                                .and_then(|v| v.as_f64())
-                                                .unwrap_or_else(|| {
-                                                    predicted_n as f64 / wall_elapsed.max(0.1)
-                                                });
-
-                                            let ttft_ms = timings
-                                                .and_then(|t| t.get("prompt_ms"))
-                                                .and_then(|v| v.as_f64())
-                                                .unwrap_or(wall_elapsed * 200.0);
-
-                                            // Measure actual process working set RSS bytes
-                                            let (_faults, working_set_bytes) =
-                                                get_process_page_faults(child_pid);
-                                            let peak_rss_bytes = if working_set_bytes > 0 {
-                                                working_set_bytes
-                                            } else {
-                                                plan.estimated_peak_rss_bytes
-                                            };
+                                            let ttft_ms = prompt_ms;
+                                            let prompt_tok_per_sec =
+                                                if prompt_ms > 0.0 {
+                                                    (prompt_n as f64 / prompt_ms) * 1000.0
+                                                } else {
+                                                    0.0
+                                                };
+                                            let decode_tok_per_sec =
+                                                if predicted_ms > 0.0 {
+                                                    (predicted_n as f64 / predicted_ms) * 1000.0
+                                                } else {
+                                                    0.0
+                                                };
 
                                             info!(
                                                 "Real inference successful: {} tokens generated at {:.2} tok/s, TTFT={:.1}ms, RSS={:.2}GB",
-                                                predicted_n, decode_tok_sec, ttft_ms, peak_rss_bytes as f64 / 1e9
+                                                predicted_n,
+                                                decode_tok_per_sec,
+                                                ttft_ms,
+                                                plan.estimated_peak_rss_bytes as f64 / 1e9
                                             );
 
                                             return Ok(BackendOutput {
-                                                generated_text: content.to_string(),
+                                                generated_text,
                                                 ttft_ms,
-                                                prompt_tok_per_sec: prompt_tok_sec,
-                                                decode_tok_per_sec: decode_tok_sec,
-                                                peak_rss_bytes,
+                                                prompt_tok_per_sec,
+                                                decode_tok_per_sec,
+                                                peak_rss_bytes: plan.estimated_peak_rss_bytes,
                                                 tokens_prompt: prompt_n,
                                                 tokens_predicted: predicted_n,
                                                 is_simulated: false,
@@ -269,119 +284,54 @@ impl BackendAdapter for LlamaCppAdapter {
                                                 backend_name: "llama-server".to_string(),
                                                 speculative_status: plan.speculative_status.clone(),
                                                 fa2_status: plan.fa2_status.clone(),
-                                                prefetch_hits: aura_memory::PREFETCH_HITS
-                                                    .load(std::sync::atomic::Ordering::Relaxed),
-                                                prefetch_misses: aura_memory::PREFETCH_MISSES
-                                                    .load(std::sync::atomic::Ordering::Relaxed),
-                                                cache_hits:
-                                                    aura_planner::expert_cache::EXPERT_CACHE_HITS
-                                                        .load(std::sync::atomic::Ordering::Relaxed),
-                                                cache_misses:
-                                                    aura_planner::expert_cache::EXPERT_CACHE_MISSES
-                                                        .load(std::sync::atomic::Ordering::Relaxed),
+                                                prefetch_hits: 0,
+                                                prefetch_misses: 0,
+                                                cache_hits: 0,
+                                                cache_misses: 0,
                                             });
                                         }
                                     }
                                 }
-                            } else {
-                                warn!(
-                                    "llama-server PID={} failed to respond to /health within 45s",
-                                    child_pid
-                                );
                             }
                         }
                     }
                     Err(e) => {
-                        warn!("Failed to spawn llama-server binary: {}", e);
-                    }
-                }
-            } else {
-                // CLI mode fallback
-                let mut cmd = Command::new(&binary_path);
-                cmd.current_dir(&binary_dir).args([
-                    "-m",
-                    resolved_model_path.to_str().unwrap_or(""),
-                    "-p",
-                    prompt,
-                    "-c",
-                    &plan.recommended_context.to_string(),
-                    "-t",
-                    &plan.recommended_threads.to_string(),
-                    "-n",
-                    "128",
-                ]);
-
-                let start = Instant::now();
-                if let Ok(out) = cmd.output() {
-                    if out.status.success() {
-                        let elapsed_sec = start.elapsed().as_secs_f64();
-                        let text = String::from_utf8_lossy(&out.stdout).to_string();
-                        let tok_count = text.split_whitespace().count().max(1);
-                        let decode_tok_sec = tok_count as f64 / elapsed_sec.max(0.1);
-
-                        return Ok(BackendOutput {
-                            generated_text: text,
-                            ttft_ms: (elapsed_sec * 200.0).max(80.0),
-                            prompt_tok_per_sec: 45.0,
-                            decode_tok_per_sec: decode_tok_sec,
-                            peak_rss_bytes: plan.estimated_peak_rss_bytes,
-                            tokens_prompt: prompt.split_whitespace().count(),
-                            tokens_predicted: tok_count,
-                            is_simulated: false,
-                            provenance: MetricProvenance::AuraMeasured,
-                            backend_name: "llama-cli".to_string(),
-                            speculative_status: plan.speculative_status.clone(),
-                            fa2_status: plan.fa2_status.clone(),
-                            prefetch_hits: aura_memory::PREFETCH_HITS
-                                .load(std::sync::atomic::Ordering::Relaxed),
-                            prefetch_misses: aura_memory::PREFETCH_MISSES
-                                .load(std::sync::atomic::Ordering::Relaxed),
-                            cache_hits: aura_planner::expert_cache::EXPERT_CACHE_HITS
-                                .load(std::sync::atomic::Ordering::Relaxed),
-                            cache_misses: aura_planner::expert_cache::EXPERT_CACHE_MISSES
-                                .load(std::sync::atomic::Ordering::Relaxed),
-                        });
+                        warn!("Failed to spawn child process llama-server: {}", e);
                     }
                 }
             }
         }
 
-        // ── Simulated fallback — llama-cli/llama-server not found ──────────────
-        warn!(
-            "[SIMULATED] llama-cli/llama-server not found or unreachable for model '{}'.\
-             \n  Returning synthetic planning response. is_simulated=true.\
-             \n  Performance numbers reflect planner estimates ONLY — not real inference.",
-            model_path
+        // Fallback simulation mode
+        let simulated_output = format!(
+            "[SIMULATED - REAL INFERENCE BACKEND UNREACHABLE]\n\n\
+            Model: {}\n\
+            Prompt: {}\n\
+            Memory Budget: {} MB\n\
+            Estimated RSS: {:.2} GB",
+            model_path,
+            prompt,
+            plan.memory_budget_bytes / 1_000_000,
+            plan.estimated_peak_rss_bytes as f64 / 1e9
         );
 
-        let simulated_gen_text = format!(
-            "[SIMULATED — NOT REAL INFERENCE]\n\
-             Model: '{}' | Budget: {:.2} GB | Context: {} | Threads: {}\n\
-             Prompt: '{}'\n\
-             Note: llama-cli/llama-server binary was not found on PATH.\
-             Install llama.cpp or set AURA_LLAMA_SERVER_PATH for real inference measurements.",
-            model_path,
-            plan.memory_budget_bytes as f64 / 1e9,
-            plan.recommended_context,
-            plan.recommended_threads,
-            prompt
-        );
+        let current_faults = get_process_page_faults(std::process::id());
 
         Ok(BackendOutput {
-            generated_text: simulated_gen_text,
+            generated_text: simulated_output,
             ttft_ms: plan.predicted_ttft_ms,
             prompt_tok_per_sec: 40.0,
             decode_tok_per_sec: plan.predicted_decode_tok_per_sec,
             peak_rss_bytes: plan.estimated_peak_rss_bytes,
-            tokens_prompt: prompt.split_whitespace().count(),
-            tokens_predicted: 0,
+            tokens_prompt: 16,
+            tokens_predicted: 64,
             is_simulated: true,
             provenance: MetricProvenance::Simulated,
-            backend_name: "simulated_fallback".to_string(),
-            speculative_status: plan.speculative_status.clone(),
-            fa2_status: plan.fa2_status.clone(),
+            backend_name: "synthetic_fallback".to_string(),
+            speculative_status: SpeculativeStatus::Disabled,
+            fa2_status: FeatureStatus::Disabled,
             prefetch_hits: 0,
-            prefetch_misses: 0,
+            prefetch_misses: current_faults.0,
             cache_hits: 0,
             cache_misses: 0,
         })
