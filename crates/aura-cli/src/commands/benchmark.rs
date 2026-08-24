@@ -1,5 +1,7 @@
+use aura_backends::{BackendAdapter, LlamaCppAdapter};
 use aura_benchmark::{generate_benchmark_report, reproduce_benchmark};
 use aura_hardware::probe_hardware;
+use aura_memory::enforce_memory_budget;
 use aura_model::manifest::load_manifest;
 use aura_planner::generate_execution_plan;
 use std::fs::File;
@@ -19,6 +21,8 @@ pub fn execute_benchmark(model_path: Option<&str>, reproduce_file: Option<&str>,
                     report.phases.cold_start.decode_tok_per_sec
                 );
                 println!("Enforcement    : {}", report.plan.enforcement_mechanism);
+                println!("Provenance     : {}", report.provenance);
+                println!("Simulated      : {}", report.is_simulated);
             }
             Err(e) => {
                 eprintln!("❌ Reproduction failed: {}", e);
@@ -50,7 +54,21 @@ pub fn execute_benchmark(model_path: Option<&str>, reproduce_file: Option<&str>,
 
     let plan = generate_execution_plan(&hw, &manifest, 4_000_000_000, None);
 
-    let report = generate_benchmark_report(hw, manifest, plan, 180.0, 14.5);
+    let pid = std::process::id();
+    let _ = enforce_memory_budget(pid, plan.memory_budget_bytes, &plan.enforcement_mechanism);
+
+    let adapter = LlamaCppAdapter::new();
+    let prompt = "Explain virtual memory versus physical RSS to a beginner.";
+
+    let output = match adapter.execute(model, prompt, &plan) {
+        Ok(out) => out,
+        Err(e) => {
+            eprintln!("❌ Benchmark execution failed: {}", e);
+            return;
+        }
+    };
+
+    let report = generate_benchmark_report(hw, manifest, plan, &output);
 
     let json_str = serde_json::to_string_pretty(&report).unwrap();
     if let Ok(mut f) = File::create(out_path) {
@@ -65,8 +83,18 @@ pub fn execute_benchmark(model_path: Option<&str>, reproduce_file: Option<&str>,
         report.phases.cold_start.ttft_ms
     );
     println!(
-        "Decode tok/s   : {:.2}",
+        "Prefill Speed  : {:.2} tok/s",
+        report.phases.cold_start.prompt_tok_per_sec
+    );
+    println!(
+        "Decode tok/s   : {:.2} tok/s",
         report.phases.cold_start.decode_tok_per_sec
     );
+    println!(
+        "Peak RSS       : {:.2} GB",
+        report.phases.cold_start.peak_rss_bytes as f64 / 1e9
+    );
     println!("Enforcement    : {}", report.plan.enforcement_mechanism);
+    println!("Provenance     : {}", report.provenance);
+    println!("Simulated      : {}", report.is_simulated);
 }

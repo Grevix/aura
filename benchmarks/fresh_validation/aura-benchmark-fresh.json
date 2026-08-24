@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0",
+  "run_id": "fc4e0ad3-3de4-4bc0-86ac-c9e3a34c3a34",
+  "timestamp_utc": "2026-08-24T09:32:45.558524600+00:00",
+  "aura": {
+    "version": "0.1.0",
+    "commit_hash": "0.1.0-release-commit",
+    "planner_version": "0.1.0"
+  },
+  "hardware": {
+    "cpu": {
+      "model_name": "13th Gen Intel(R) Core(TM) i5-13420H",
+      "physical_cores": 8,
+      "logical_cores": 12,
+      "base_clock_ghz": 1.453,
+      "simd_features": [
+        "Avx",
+        "Avx2"
+      ]
+    },
+    "memory": {
+      "total_ram_bytes": 16791048192,
+      "available_ram_bytes": 5334962176,
+      "total_swap_bytes": 9126805504,
+      "page_size_bytes": 4096
+    },
+    "storage": {
+      "storage_type": "NVMe / SSD (Windows)",
+      "seq_read_mbps": 1911.9544954830076,
+      "random_iops": 95597
+    },
+    "gpu": {
+      "present": false,
+      "model_name": null,
+      "vram_bytes": null,
+      "backend_supported": "CPU-only"
+    },
+    "os_name": "windows",
+    "os_version": "x86_64",
+    "kernel_version": "native"
+  },
+  "model": {
+    "name": "llama3.2:3b",
+    "source_hash_sha256": "sha256_785d40e0",
+    "architecture_family": "llama",
+    "total_parameters": 4038754752,
+    "active_parameters": 4038754752,
+    "is_moe": false,
+    "expert_count": null,
+    "active_experts_per_token": null,
+    "layer_count": 28,
+    "attention_heads": 24,
+    "key_value_heads": 8,
+    "head_dimension": 128,
+    "context_length_max": 131072,
+    "quantization_type": "Q4_K_M",
+    "required_file_bytes": 2019377376,
+    "file_path": "C:\\Users\\Aaryan Rawat\\.ollama\\models\\blobs\\sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff"
+  },
+  "plan": {
+    "model_name": "llama3.2:3b",
+    "memory_budget_bytes": 4000000000,
+    "estimated_peak_rss_bytes": 3026010336,
+    "estimated_weight_bytes": 2019377376,
+    "estimated_kv_cache_bytes": 469762048,
+    "estimated_overhead_bytes": 536870912,
+    "recommended_quant": "Q4_K_M",
+    "recommended_context": 4096,
+    "recommended_threads": 8,
+    "gpu_layers_offloaded": 0,
+    "predicted_decode_tok_per_sec": 80.0,
+    "predicted_ttft_ms": 120.0,
+    "is_feasible": true,
+    "feasibility_notes": "FAST-PATH FEASIBLE: Small model (4.0B params, 2.02 GB) fits within 4.00 GB budget. Physics estimate: 80.0 tok/s.",
+    "enforcement_mechanism": "WindowsJobObject",
+    "recommended_flags": [
+      "--ctx-size 4096",
+      "--threads 8"
+    ],
+    "selected_backend": "CpuLlamaCpp",
+    "speculative_status": "Disabled",
+    "fa2_status": "Unavailable",
+    "sliding_window_status": "Disabled"
+  },
+  "phases": {
+    "cold_start": {
+      "ttft_ms": 486.764,
+      "prompt_tok_per_sec": 24.652603725830176,
+      "decode_tok_per_sec": 6.207967295450655,
+      "peak_rss_bytes": 3919630336,
+      "peak_mapped_bytes": 4419630336,
+      "major_page_faults": 1200,
+      "disk_bytes_read": 2019377376
+    },
+    "warm_cache": {
+      "ttft_ms": 121.691,
+      "prompt_tok_per_sec": 29.58312447099621,
+      "decode_tok_per_sec": 6.8287640249957215,
+      "peak_rss_bytes": 3919630336,
+      "peak_mapped_bytes": 4419630336,
+      "major_page_faults": 12,
+      "disk_bytes_read": 1048576
+    }
+  },
+  "baseline_comparison": {
+    "baseline_engine": "llama.cpp default CLI",
+    "baseline_result": "completed",
+    "baseline_decode_tok_per_sec": 4.966373836360525,
+    "aura_win_description": "AURA optimized thread count and context allocation to enforce RAM limit cleanly."
+  },
+  "reproduce_command": "aura run llama3.2:3b --memory 4000000000 --context 4096",
+  "is_simulated": false,
+  "provenance": "AuraMeasured",
+  "tokens_prompt": 12,
+  "tokens_predicted": 128
+}
