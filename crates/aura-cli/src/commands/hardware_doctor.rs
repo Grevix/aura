@@ -21,15 +21,31 @@ pub fn execute_hardware_doctor() {
     println!("SIMD Extensions: {}", simd_str.join(", "));
 
     println!("\nRAM:");
-    println!("Total System RAM : {:.2} GB", hw.memory.total_ram_bytes as f64 / 1e9);
-    println!("Available Memory : {:.2} GB", hw.memory.available_ram_bytes as f64 / 1e9);
-    println!("Memory Bandwidth : ~{:.2} GB/s (DDR5 Dual Channel Est)", 38.4);
+    println!(
+        "Total System RAM : {:.2} GB",
+        hw.memory.total_ram_bytes as f64 / 1e9
+    );
+    println!(
+        "Available Memory : {:.2} GB",
+        hw.memory.available_ram_bytes as f64 / 1e9
+    );
+    println!(
+        "Memory Bandwidth : ~{:.2} GB/s (DDR5 Dual Channel Est)",
+        38.4
+    );
 
     println!("\nGPU & Accelerator:");
     if hw.gpu.present {
-        println!("GPU Model        : {}", hw.gpu.model_name.as_deref().unwrap_or("Detected"));
+        println!(
+            "GPU Model        : {}",
+            hw.gpu.model_name.as_deref().unwrap_or("Detected")
+        );
         if let Some(bytes) = hw.gpu.vram_bytes {
-            println!("VRAM Total       : {:.2} GB ({} MiB)", bytes as f64 / 1e9, bytes / (1024 * 1024));
+            println!(
+                "VRAM Total       : {:.2} GB ({} MiB)",
+                bytes as f64 / 1e9,
+                bytes / (1024 * 1024)
+            );
         } else {
             println!("VRAM Total       : Shared / System Managed");
         }

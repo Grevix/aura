@@ -17,7 +17,13 @@ pub fn execute_ollama_list() {
                             let name = m.get("name").and_then(|n| n.as_str()).unwrap_or("unknown");
                             let size = m.get("size").and_then(|s| s.as_u64()).unwrap_or(0);
                             let size_gb = format!("{:.2} GB", size as f64 / 1e9);
-                            let modif = m.get("modified_at").and_then(|t| t.as_str()).unwrap_or("").chars().take(10).collect::<String>();
+                            let modif = m
+                                .get("modified_at")
+                                .and_then(|t| t.as_str())
+                                .unwrap_or("")
+                                .chars()
+                                .take(10)
+                                .collect::<String>();
                             println!("{:<25} {:<15} {:<15}", name, size_gb, modif);
                         }
                         println!("{:-<58}", "");

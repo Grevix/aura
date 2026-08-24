@@ -196,14 +196,14 @@ impl BackendAdapter for LlamaCppAdapter {
                             let mut server_ready = false;
                             let health_start = Instant::now();
 
-                            while health_start.elapsed() < Duration::from_secs(45) {
+                            while health_start.elapsed() < Duration::from_secs(90) {
                                 if let Ok(resp) = cli.get(&health_url).send() {
                                     if resp.status().is_success() {
                                         server_ready = true;
                                         break;
                                     }
                                 }
-                                std::thread::sleep(Duration::from_millis(150));
+                                std::thread::sleep(Duration::from_millis(200));
                             }
 
                             if server_ready {
@@ -238,10 +238,9 @@ impl BackendAdapter for LlamaCppAdapter {
                                             let timings = &json_body["timings"];
                                             let prompt_n =
                                                 timings["prompt_n"].as_u64().unwrap_or(1) as usize;
-                                            let predicted_n = timings["predicted_n"]
-                                                .as_u64()
-                                                .unwrap_or(0)
-                                                as usize;
+                                            let predicted_n =
+                                                timings["predicted_n"].as_u64().unwrap_or(0)
+                                                    as usize;
 
                                             let prompt_ms =
                                                 timings["prompt_ms"].as_f64().unwrap_or(1.0);
@@ -250,18 +249,16 @@ impl BackendAdapter for LlamaCppAdapter {
                                                 .unwrap_or(wall_time_ms);
 
                                             let ttft_ms = prompt_ms;
-                                            let prompt_tok_per_sec =
-                                                if prompt_ms > 0.0 {
-                                                    (prompt_n as f64 / prompt_ms) * 1000.0
-                                                } else {
-                                                    0.0
-                                                };
-                                            let decode_tok_per_sec =
-                                                if predicted_ms > 0.0 {
-                                                    (predicted_n as f64 / predicted_ms) * 1000.0
-                                                } else {
-                                                    0.0
-                                                };
+                                            let prompt_tok_per_sec = if prompt_ms > 0.0 {
+                                                (prompt_n as f64 / prompt_ms) * 1000.0
+                                            } else {
+                                                0.0
+                                            };
+                                            let decode_tok_per_sec = if predicted_ms > 0.0 {
+                                                (predicted_n as f64 / predicted_ms) * 1000.0
+                                            } else {
+                                                0.0
+                                            };
 
                                             info!(
                                                 "Real inference successful: {} tokens generated at {:.2} tok/s, TTFT={:.1}ms, RSS={:.2}GB",
