@@ -1,0 +1,20 @@
+{
+  "profile_name": "debian_16gb_small_gpu",
+  "target_os": "Debian GNU/Linux 12 (bookworm) x86_64",
+  "kernel": "Linux 6.1.0-28-amd64",
+  "cpu_physical_cores": 8,
+  "cpu_logical_cores": 12,
+  "cpu_simd": ["Avx", "Avx2", "Fma"],
+  "ram_total_bytes": 17179869184,
+  "ram_total_gb": 16.0,
+  "gpu_present": true,
+  "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "vram_total_bytes": 6442450944,
+  "vram_total_gb": 6.0,
+  "storage_type": "NVMe PCIe Gen4 SSD",
+  "seq_read_mbps": 2313.54,
+  "random_4k_iops": 115677,
+  "primary_model": "qwen3:8b",
+  "recommended_mode": "GPU_OFFLOAD / CUDA",
+  "execution_plan": "Staged CUDA offload with double-buffered NVMe prefetch"
+}

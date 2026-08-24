@@ -1,0 +1,20 @@
+{
+  "profile_name": "debian_192gb_cpu",
+  "target_os": "Debian GNU/Linux 12 (bookworm) x86_64",
+  "kernel": "Linux 6.1.0-28-amd64",
+  "cpu_physical_cores": 32,
+  "cpu_logical_cores": 64,
+  "cpu_simd": ["Avx", "Avx2", "Avx512f", "Avx512dq", "Avx512bw", "Avx512vl"],
+  "ram_total_bytes": 206158430208,
+  "ram_total_gb": 192.0,
+  "gpu_present": false,
+  "gpu_name": "None",
+  "vram_total_bytes": 0,
+  "vram_total_gb": 0.0,
+  "storage_type": "NVMe PCIe Gen4 SSD RAID-0",
+  "seq_read_mbps": 4850.00,
+  "random_4k_iops": 450000,
+  "primary_model": "qwen3:8b",
+  "recommended_mode": "CPU_OFFLOAD / RAM_RESIDENT",
+  "execution_plan": "Multi-threaded AVX-512 SIMD with RAM mmap weight staging"
+}
