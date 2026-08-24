@@ -1,0 +1,32 @@
+[
+  {
+    "prompt_id": "P01",
+    "prompt": "Explain GPU matrix multiplication speedups over CPU SIMD.",
+    "elapsed_sec": 71.62,
+    "output_visible": true,
+    "is_simulated": false,
+    "backend": "CudaLlamaCpp",
+    "vram_used_mb": 5849,
+    "gpu_util_pct": 4.0
+  },
+  {
+    "prompt_id": "P02",
+    "prompt": "Write a CUDA kernel for vector addition in C++.",
+    "elapsed_sec": 83.67,
+    "output_visible": true,
+    "is_simulated": false,
+    "backend": "CudaLlamaCpp",
+    "vram_used_mb": 5849,
+    "gpu_util_pct": 3.0
+  },
+  {
+    "prompt_id": "P03",
+    "prompt": "Explain memory bandwidth limits in LLM decode phases.",
+    "elapsed_sec": 59.42,
+    "output_visible": true,
+    "is_simulated": false,
+    "backend": "CudaLlamaCpp",
+    "vram_used_mb": 17,
+    "gpu_util_pct": 2.0
+  }
+]
