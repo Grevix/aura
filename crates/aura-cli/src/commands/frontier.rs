@@ -20,6 +20,8 @@ pub fn execute_frontier_run(model: &str) {
         println!("⚠️ SAFETY INTERVENTION:");
         println!("- Model weights require >1.5 TB local NVMe storage.");
         println!("- Local full parameter downloading blocked to prevent disk exhaustion.");
-        println!("- Out-of-core streaming architecture validated. For execution, connect remote/Colab sharded instance.");
+        println!("- Out-of-core streaming architecture validated.");
+        println!("- For execution, run the cloud validation suite:");
+        println!("  benchmarks/notebooks/AURA_Frontier_Validation.ipynb (Google Colab / Kaggle)");
     }
 }
