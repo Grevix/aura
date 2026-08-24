@@ -1,6 +1,10 @@
 pub mod audit;
 pub mod benchmark;
 pub mod doctor;
+pub mod experimental;
 pub mod gpu_doctor;
+pub mod hardware_doctor;
+pub mod model_inspect;
+pub mod ollama_list;
 pub mod plan;
 pub mod run;

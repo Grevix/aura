@@ -124,6 +124,7 @@ dependencies = [
  "aura-model",
  "aura-planner",
  "clap",
+ "reqwest",
  "serde",
  "serde_json",
  "tracing",

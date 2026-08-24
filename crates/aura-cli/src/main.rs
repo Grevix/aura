@@ -6,7 +6,7 @@ use clap::{Parser, Subcommand};
 #[command(
     name = "aura",
     author = "AURA Systems Engineering Team",
-    version = "0.1.0",
+    version = "0.10.0",
     about = "AURA — Adaptive Ultra-Low-Memory Runtime for AI",
     long_about = "AURA is a hardware-aware, memory-budgeted local inference optimizer and orchestration engine."
 )]
@@ -20,8 +20,27 @@ enum Commands {
     /// Probe physical host hardware, SIMD extensions, RAM, and storage IOPS
     Doctor,
 
+    /// Comprehensive hardware, CPU SIMD, RAM bandwidth, GPU VRAM, and storage doctor
+    HardwareDoctor,
+
     /// Probe GPU hardware acceleration, VRAM, drivers, and CUDA capabilities
     GpuDoctor,
+
+    /// List all discovered local models from Ollama repository
+    OllamaList,
+
+    /// Inspect model architecture, layers, experts, and memory feasibility
+    ModelInspect {
+        /// Model identifier or tag (e.g. qwen3:8b, moonshotai/Kimi-K3, zai-org/GLM-5.2)
+        #[arg(short = 'm', long)]
+        model: String,
+    },
+
+    /// Launch experimental large-model execution or feasibility evaluation
+    Experimental {
+        #[command(subcommand)]
+        subcmd: ExperimentalCommands,
+    },
 
     /// Generate an optimized hardware-aware execution plan for a model under a memory budget
     Plan {
@@ -84,6 +103,16 @@ enum Commands {
     },
 }
 
+#[derive(Subcommand)]
+enum ExperimentalCommands {
+    /// Evaluate resource feasibility and run experimental large-model path
+    Run {
+        /// Target model identifier
+        #[arg(short = 'm', long)]
+        model: String,
+    },
+}
+
 fn main() {
     tracing_subscriber::fmt::init();
 
@@ -93,9 +122,23 @@ fn main() {
         Commands::Doctor => {
             commands::doctor::execute_doctor();
         }
+        Commands::HardwareDoctor => {
+            commands::hardware_doctor::execute_hardware_doctor();
+        }
         Commands::GpuDoctor => {
             commands::gpu_doctor::execute_gpu_doctor();
         }
+        Commands::OllamaList => {
+            commands::ollama_list::execute_ollama_list();
+        }
+        Commands::ModelInspect { model } => {
+            commands::model_inspect::execute_model_inspect(&model);
+        }
+        Commands::Experimental { subcmd } => match subcmd {
+            ExperimentalCommands::Run { model } => {
+                commands::experimental::execute_experimental_run(&model);
+            }
+        },
         Commands::Plan {
             model,
             memory,
