@@ -45,16 +45,21 @@ impl OllamaBaselineRunner {
         }
     }
 
-    /// Run a non-streaming inference call via the Ollama REST API.
-    /// Returns real timing metrics extracted directly from Ollama's response fields.
-    ///
-    /// Ollama configuration applied:
-    ///   num_gpu = 0  (CPU-only, matches AURA constraint)
-    ///   num_thread = 8  (matches AURA recommended_threads on i5-13420H)
     pub fn run_baseline(&self, model_name: &str, prompt: &str) -> Result<BackendOutput> {
+        self.run_baseline_with_options(model_name, prompt, 0, 8)
+    }
+
+    /// Run a non-streaming inference call via the Ollama REST API with GPU offload options.
+    pub fn run_baseline_with_options(
+        &self,
+        model_name: &str,
+        prompt: &str,
+        num_gpu: u32,
+        num_thread: u32,
+    ) -> Result<BackendOutput> {
         info!(
-            "Executing Ollama REST API baseline for model: {} via {}",
-            model_name, self.base_url
+            "Executing Ollama REST API baseline (num_gpu={}, num_thread={}) for model: {} via {}",
+            num_gpu, num_thread, model_name, self.base_url
         );
 
         let client = reqwest::blocking::Client::builder()
@@ -67,8 +72,8 @@ impl OllamaBaselineRunner {
             "prompt": prompt,
             "stream": false,
             "options": {
-                "num_gpu": 0,
-                "num_thread": 8
+                "num_gpu": num_gpu,
+                "num_thread": num_thread
             }
         });
 
@@ -103,7 +108,6 @@ impl OllamaBaselineRunner {
             warn!("Ollama response marked done=false for model {}", model_name);
         }
 
-        // ── Derive exact metrics from Ollama's native timing fields ──────────
         let ns_to_sec = |ns: u64| -> f64 { ns as f64 / 1_000_000_000.0 };
 
         let decode_tok_per_sec = if body.eval_duration > 0 && body.eval_count > 0 {
@@ -128,14 +132,21 @@ impl OllamaBaselineRunner {
             wall_elapsed * 300.0
         };
 
+        let backend_name = if num_gpu > 0 {
+            "ollama-rest-cuda".to_string()
+        } else {
+            "ollama-rest-cpu".to_string()
+        };
+
         info!(
-            "Ollama REST: model={} eval_count={} eval_duration={}ns decode={:.2}tok/s prefill={:.2}tok/s ttft={:.1}ms",
+            "Ollama REST: model={} eval_count={} eval_duration={}ns decode={:.2}tok/s prefill={:.2}tok/s ttft={:.1}ms backend={}",
             body.model,
             body.eval_count,
             body.eval_duration,
             decode_tok_per_sec,
             prompt_tok_per_sec,
-            ttft_ms
+            ttft_ms,
+            backend_name
         );
 
         Ok(BackendOutput {
@@ -148,7 +159,7 @@ impl OllamaBaselineRunner {
             tokens_predicted: body.eval_count as usize,
             is_simulated: false,
             provenance: MetricProvenance::OllamaMeasured,
-            backend_name: "ollama-rest".to_string(),
+            backend_name,
             speculative_status: SpeculativeStatus::Disabled,
             fa2_status: FeatureStatus::Disabled,
             prefetch_hits: 0,
