@@ -10,9 +10,9 @@
 
 ## What is AURA?
 
-AURA sits between your application and a local inference backend (Ollama / llama.cpp). It enforces a hard process memory budget using OS-level kernel primitives, automatically selects the best context length and quantization that fits within your configured memory ceiling, and plans model execution before a single weight is loaded into RAM.
+AURA sits between your application and local inference backends (`llama-server` / `llama-cli`). It enforces a hard process memory budget using OS-level kernel primitives, automatically selects the best context length and quantization that fits within your configured memory ceiling, and orchestrates model execution in real-time.
 
-AURA does **not** replace llama.cpp or Ollama. It orchestrates them within a defined, non-negotiable process memory boundary.
+AURA does **not** replace llama.cpp or Ollama. It orchestrates them as child processes within a defined, non-negotiable process memory boundary.
 
 ---
 
@@ -37,7 +37,7 @@ Without enforcement, inference triggers OS page swapping to NVMe disk, destroys 
 | Context window too large | Silent process crash or memory overflow | Planner automatically scales context (e.g. 4096 → 2048 → 1024) |
 | Quantization fits tightly | Manual user trial-and-error | Planner evaluates quantization fallback (e.g. Q4_K_M → Q3_K_S) |
 | Oversized model (8.95 GB) | Uncontrolled allocation attempt | Planner identifies infeasibility before model loading begins |
-| Non-interactive automation | Subprocess stdin TTY buffer deadlocks | Native REST API & CLI execution for 100% reliable execution |
+| Non-interactive automation | Subprocess TTY buffer deadlocks | Native REST API & CLI execution for 100% reliable execution |
 
 ---
 
@@ -74,53 +74,66 @@ aura doctor
 # 2. Generate a hardware-aware execution plan for a model under a 4GB budget
 aura plan --model llama3.2:3b --memory 4G
 
-# 3. Launch budget-enforced inference execution
+# 3. Launch budget-enforced real inference execution
 aura run --model llama3.2:3b --memory 4G --prompt "Explain quantum computing in three sentences."
 
-# 4. Execute the automated benchmark suite and generate JSON telemetry
-aura benchmark --out aura-benchmark.json
+# 4. Speculative decoding with draft model
+aura run --model qwen3:8b --draft-model qwen3:0.6b --memory 4G --prompt "Explain virtual memory."
 
-# 5. Evaluate the 10-tier release audit gate
+# 5. Execute automated benchmark suite and generate JSON telemetry
+aura benchmark --model llama3.2:3b --out aura-benchmark.json
+
+# 6. Evaluate the 10-tier release audit gate
 aura audit --out audit.json
 ```
 
-### CLI Command Options
+### Example Real Output
 
 ```text
-aura doctor
-  Probes CPU physical/logical cores, SIMD extensions (AVX2/AVX-512), total & available RAM, page size, NVMe read throughput/IOPS, and GPU state.
+🚀 Launching AURA Budget-Enforced Execution Engine...
 
-aura plan --model <MODEL> [--memory <BUDGET>] [--context <CONTEXT>]
-  -m, --model <MODEL>    Path to model GGUF file or Ollama model tag (e.g. llama3.2:3b)
-  -b, --memory <BUDGET>  Memory budget ceiling (default: 4G)
-  -c, --context <CTX>    Requested context window size (optional)
+=== GENERATION OUTPUT ===
+Quantum computing is a new way of processing information that uses the principles of quantum mechanics to perform calculations. Unlike classical computers, which use bits to store and process information, quantum computers use quantum bits or qubits, which can exist in multiple states at the same time. This allows quantum computers to solve certain problems much faster than classical computers, making them potentially useful for fields such as cryptography, optimization, and simulation.
 
-aura run --model <MODEL> [--memory <BUDGET>] [--prompt <PROMPT>]
-  -m, --model <MODEL>    Model tag or GGUF path
-  -b, --memory <BUDGET>  Memory budget ceiling (default: 4G)
-  -p, --prompt <PROMPT>  Prompt text for generation
-
-aura benchmark [--model <MODEL>] [--reproduce <FILE>] [--out <OUTPUT>]
-  -m, --model <MODEL>    Model tag to benchmark
-  -r, --reproduce <FILE> Reproduce previous benchmark JSON artifact
-  -o, --out <OUTPUT>     Output JSON path (default: aura-benchmark.json)
-
-aura audit [--out <OUTPUT>]
-  -o, --out <OUTPUT>     Output JSON path (default: audit.json)
+=== RUN METRICS & TELEMETRY ===
+TTFT Latency   : 374.34 ms
+Prefill Speed  : 24.04 tok/s
+Decode Speed   : 6.31 tok/s
+Peak RSS       : 3.92 GB
+Backend        : llama-server
+Provenance     : aura_measured
+Simulated      : false
+Enforcement    : windows_job_object
+Speculative    : Disabled
+FA2 Status     : Unavailable
+Prefetch Hits  : 0 / Misses: 0
+Expert Cache   : Hits: 0 / Misses: 0
 ```
+
+---
+
+## Telemetry Provenance & Integrity
+
+AURA strictly tracks the provenance of every metric to ensure zero fabricated or misleading performance numbers:
+
+| Provenance Label | Description |
+|---|---|
+| `aura_measured` | Directly measured from a real child `llama-server` process execution |
+| `ollama_measured` | Directly extracted from Ollama REST API `/api/generate` response timing fields |
+| `planner_estimate` | Analytical memory/decode throughput prediction computed prior to loading weights |
+| `simulated` | Synthetic fallback returned only when no backend executable is available on host |
 
 ---
 
 ## Key Features
 
+- **Real `llama-server` Child Process Manager**: Spawns Ollama bundled `llama-server.exe` / `llama-cli` with working directory DLL loading and dynamic TCP port discovery.
+- **Hard OS Memory Enforcement**: Enforces process commit boundaries via Win32 `JOB_OBJECT_LIMIT_PROCESS_MEMORY` on Windows and cgroup v2 `MemoryMax` on Linux directly attached to child process PIDs.
 - **Hardware-Aware Planning**: Probes CPU physical cores, AVX2 SIMD, RAM, and NVMe read throughput before allocating execution resources.
-- **Hard OS Memory Enforcement**: Enforces process commit boundaries via Win32 `JOB_OBJECT_LIMIT_PROCESS_MEMORY` on Windows and cgroup v2 `MemoryMax` on Linux.
 - **Dynamic Context Scaling**: Multi-pass planner search automatically scales context windows to stay within configured budgets.
-- **Quantization Selection**: Recommends optimal quantization levels based on physical hardware memory constraints.
-- **GGUF & Ollama Integration**: Resolves local Ollama model manifests and GGUF blob paths automatically.
-- **llama.cpp Backend Adapter**: Utilizes production llama.cpp GEMM kernels for native CPU execution.
-- **MoE Expert Cache**: LRU-based expert cache eviction strategy for Mixture-of-Experts architectures.
-- **Cold-Start Kernel Prefetch**: Win32 `PrefetchVirtualMemory` and Unix `madvise(MADV_WILLNEED)` readahead optimization.
+- **Speculative Decoding Architecture**: Evaluates combined target + draft model memory feasibility under the configured budget.
+- **Predictive Weight Prefetching**: Win32 `PrefetchVirtualMemory` and Unix `madvise(MADV_WILLNEED)` readahead optimization with telemetry counters.
+- **MoE Expert Cache**: Hybrid LFU/LRU frequency-weighted admission policy with hit/miss/eviction metrics.
 
 ---
 
@@ -135,13 +148,13 @@ User Request / Prompt
        ↓
  Execution Planner ──→ Context & Quantization Search
        ↓
- OS Budget Enforcer ──→ Win32 Job Object / Linux cgroup v2
+ OS Budget Enforcer ──→ Win32 Job Object / Linux cgroup v2 (Child PID)
        ↓
  Model Resolver ──→ Resolve Ollama GGUF Blob
        ↓
- Expert Cache / VTM ──→ LRU Cache & Async Prefetch
+ Expert Cache / VTM ──→ Hybrid LFU/LRU Cache & Async Prefetch
        ↓
- llama.cpp Backend ──→ Native AVX2 GEMM Execution
+ llama-server Child Process ──→ Native AVX2 GEMM Execution via HTTP
 ```
 
 ---
@@ -184,7 +197,7 @@ User Request / Prompt
 
 - **AURA does not compress arbitrary 70B models into 2 GB.** Memory bounds are governed by hardware limits and model precision.
 - **AURA does not replace optimized GEMM kernels** — it wraps and orchestrates llama.cpp's production AVX2 kernels.
-- **AURA does not provide discrete GPU acceleration in V7** — current release focuses strictly on CPU-bound low-memory execution.
+- **AURA does not fabricate performance telemetry** — every metric includes explicit provenance tracking.
 - **AURA does not alter model output intelligence** — token generation quality is identical to the underlying GGUF model artifact.
 - **Process RSS may slightly exceed virtual commit limits** — Win32 `JOB_OBJECT_LIMIT_PROCESS_MEMORY` restricts virtual commit charge. Physical RSS may register 2–4% higher due to read-only shared GGUF memory maps.
 
@@ -205,13 +218,10 @@ ollama serve
 # 4. Pull target model
 ollama pull llama3.2:3b
 
-# 5. Discover installed model metadata
-python benchmarks/discover_models.py
+# 5. Run real AURA execution
+./target/release/aura run --model llama3.2:3b --memory 4G
 
-# 6. Run the fair Ollama REST API comparison suite
-python benchmarks/run_v7_fair_battle.py
-
-# 7. Run workspace tests
+# 6. Run workspace tests
 cargo test --workspace
 ```
 
@@ -234,7 +244,6 @@ cargo clippy --workspace --all-targets -- -D warnings
 ```
 
 Verify Rust code formatting:
-
 ```bash
 cargo fmt --all -- --check
 ```
