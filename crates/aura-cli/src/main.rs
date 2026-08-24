@@ -20,6 +20,9 @@ enum Commands {
     /// Probe physical host hardware, SIMD extensions, RAM, and storage IOPS
     Doctor,
 
+    /// Probe GPU hardware acceleration, VRAM, drivers, and CUDA capabilities
+    GpuDoctor,
+
     /// Generate an optimized hardware-aware execution plan for a model under a memory budget
     Plan {
         /// Path to model artifact (GGUF or manifest)
@@ -89,6 +92,9 @@ fn main() {
     match cli.command {
         Commands::Doctor => {
             commands::doctor::execute_doctor();
+        }
+        Commands::GpuDoctor => {
+            commands::gpu_doctor::execute_gpu_doctor();
         }
         Commands::Plan {
             model,
