@@ -255,10 +255,13 @@ impl BackendAdapter for LlamaCppAdapter {
                                                 0.0
                                             };
                                             let decode_tok_per_sec = if predicted_ms > 0.0 {
-                                                (predicted_n as f64 / predicted_ms) * 1000.0
+                                                (predicted_n as f64) / (predicted_ms / 1000.0)
                                             } else {
                                                 0.0
                                             };
+
+                                            // Compact process working set and trim unreferenced pages
+                                            aura_memory::reclaim_process_memory();
 
                                             info!(
                                                 "Real inference successful: {} tokens generated at {:.2} tok/s, TTFT={:.1}ms, RSS={:.2}GB",
