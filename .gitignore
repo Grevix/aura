@@ -20,3 +20,7 @@ desktop.ini
 
 # Local benchmark temp outputs (keep research/ artifacts)
 benchmarks/results/*.tmp
+
+# Scratch & research directories
+scratch/
+research/

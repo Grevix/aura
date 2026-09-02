@@ -132,22 +132,41 @@ impl BackendAdapter for LlamaCppAdapter {
                 let port_str = port.to_string();
 
                 // Check CUDA library paths in binary_dir
-                let cuda_v13 = binary_dir.join("cuda_v13");
                 let cuda_v12 = binary_dir.join("cuda_v12");
+                let cuda_v13 = binary_dir.join("cuda_v13");
 
                 let current_path = env::var("PATH").unwrap_or_default();
-                let mut new_path = format!("{};{}", binary_dir.display(), current_path);
-
-                if cuda_v13.exists() {
-                    new_path = format!("{};{}", cuda_v13.display(), new_path);
-                } else if cuda_v12.exists() {
-                    new_path = format!("{};{}", cuda_v12.display(), new_path);
-                }
+                let (target_dir, new_path) = if cuda_v12.exists() {
+                    (
+                        cuda_v12.clone(),
+                        format!(
+                            "{};{};{}",
+                            cuda_v12.display(),
+                            binary_dir.display(),
+                            current_path
+                        ),
+                    )
+                } else if cuda_v13.exists() {
+                    (
+                        cuda_v13.clone(),
+                        format!(
+                            "{};{};{}",
+                            cuda_v13.display(),
+                            binary_dir.display(),
+                            current_path
+                        ),
+                    )
+                } else {
+                    (
+                        binary_dir.clone(),
+                        format!("{};{}", binary_dir.display(), current_path),
+                    )
+                };
 
                 let gpu_prof = detect_gpu();
 
                 let mut cmd = Command::new(&binary_path);
-                cmd.current_dir(&binary_dir).env("PATH", &new_path);
+                cmd.current_dir(&target_dir).env("PATH", &new_path);
 
                 let mut args = vec![
                     "-m".to_string(),
@@ -271,6 +290,12 @@ impl BackendAdapter for LlamaCppAdapter {
                                                 plan.estimated_peak_rss_bytes as f64 / 1e9
                                             );
 
+                                            let backend_name = if gpu_prof.present && plan.gpu_layers_offloaded > 0 {
+                                                "llama-server (CUDA)".to_string()
+                                            } else {
+                                                "llama-server (CPU)".to_string()
+                                            };
+
                                             return Ok(BackendOutput {
                                                 generated_text,
                                                 ttft_ms,
@@ -281,7 +306,7 @@ impl BackendAdapter for LlamaCppAdapter {
                                                 tokens_predicted: predicted_n,
                                                 is_simulated: false,
                                                 provenance: MetricProvenance::AuraMeasured,
-                                                backend_name: "llama-server".to_string(),
+                                                backend_name,
                                                 speculative_status: plan.speculative_status.clone(),
                                                 fa2_status: plan.fa2_status.clone(),
                                                 prefetch_hits: 0,
