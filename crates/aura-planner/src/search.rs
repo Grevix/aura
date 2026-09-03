@@ -22,12 +22,17 @@ pub fn generate_execution_plan_with_options(
     draft_manifest: Option<(&ModelManifest, f64)>,
 ) -> ExecutionPlan {
     let backend = if hw.gpu.present {
-        match hw.gpu.backend_supported.as_str() {
-            "CUDA" => BackendType::CudaLlamaCpp,
-            "Vulkan" => BackendType::VulkanLlamaCpp,
-            "DirectML" => BackendType::DirectMLLlamaCpp,
-            "Metal" => BackendType::MetalLlamaCpp,
-            _ => BackendType::CpuLlamaCpp,
+        let be = hw.gpu.backend_supported.to_uppercase();
+        if be.contains("CUDA") {
+            BackendType::CudaLlamaCpp
+        } else if be.contains("VULKAN") {
+            BackendType::VulkanLlamaCpp
+        } else if be.contains("DIRECTML") {
+            BackendType::DirectMLLlamaCpp
+        } else if be.contains("METAL") {
+            BackendType::MetalLlamaCpp
+        } else {
+            BackendType::CpuLlamaCpp
         }
     } else {
         BackendType::CpuLlamaCpp
@@ -181,6 +186,24 @@ pub fn generate_execution_plan_with_options(
         recommended_flags.push(format!("--quant {}", selected_quant));
     }
 
+    let gpu_layers_offloaded = if hw.gpu.present {
+        if let Some(vram_bytes) = hw.gpu.vram_bytes {
+            let usable_vram = vram_bytes.saturating_sub(512 * 1024 * 1024);
+            if manifest.required_file_bytes <= usable_vram {
+                99
+            } else {
+                let total_layers = manifest.layer_count.max(1) as u64;
+                let bytes_per_layer = (manifest.required_file_bytes / total_layers).max(1);
+                let offloadable = (usable_vram / bytes_per_layer).min(total_layers);
+                offloadable as usize
+            }
+        } else {
+            99
+        }
+    } else {
+        0
+    };
+
     ExecutionPlan {
         model_name: manifest.name.clone(),
         memory_budget_bytes: budget_bytes,
@@ -191,7 +214,7 @@ pub fn generate_execution_plan_with_options(
         recommended_quant: selected_quant,
         recommended_context: target_context,
         recommended_threads,
-        gpu_layers_offloaded: if hw.gpu.present { 99 } else { 0 },
+        gpu_layers_offloaded,
         predicted_decode_tok_per_sec,
         predicted_ttft_ms,
         is_feasible,

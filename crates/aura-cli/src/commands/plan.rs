@@ -62,7 +62,10 @@ pub fn execute_plan(model_path: &str, memory: &str, context: Option<usize>) {
     println!("Decision Rationale : {}", plan.feasibility_notes);
     if !plan.is_feasible {
         println!("\n💡 Recommendation:");
-        println!("  - Increase budget to {:.1} GB", plan.estimated_peak_rss_bytes as f64 / 1e9 + 0.5);
+        println!(
+            "  - Increase budget to {:.1} GB",
+            plan.estimated_peak_rss_bytes as f64 / 1e9 + 0.5
+        );
         println!("  - Or reduce context length (e.g., --context 1024)");
         println!("  - Or select lower-bit quantization (e.g., Q3_K_S or MXFP4)");
     }

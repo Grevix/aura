@@ -285,15 +285,28 @@ impl BackendAdapter for LlamaCppAdapter {
                                                 0.0
                                             };
 
-                                            // Compact process working set and trim unreferenced pages
+                                            let (_, current_ws, peak_ws) =
+                                                aura_hardware::memory::get_process_memory_info(
+                                                    child_pid,
+                                                );
+                                            let measured_peak_rss = if peak_ws > 0 {
+                                                peak_ws
+                                            } else if current_ws > 0 {
+                                                current_ws
+                                            } else {
+                                                plan.estimated_peak_rss_bytes
+                                            };
+
+                                            // Compact target process memory and trim unreferenced pages
+                                            aura_memory::reclaim_target_process_memory(child_pid);
                                             aura_memory::reclaim_process_memory();
 
                                             info!(
-                                                "Real inference successful: {} tokens generated at {:.2} tok/s, TTFT={:.1}ms, RSS={:.2}GB",
+                                                "Real inference successful: {} tokens generated at {:.2} tok/s, TTFT={:.1}ms, Peak RSS={:.2}GB",
                                                 predicted_n,
                                                 decode_tok_per_sec,
                                                 ttft_ms,
-                                                plan.estimated_peak_rss_bytes as f64 / 1e9
+                                                measured_peak_rss as f64 / 1e9
                                             );
 
                                             let backend_name = if gpu_prof.present
@@ -309,7 +322,7 @@ impl BackendAdapter for LlamaCppAdapter {
                                                 ttft_ms,
                                                 prompt_tok_per_sec,
                                                 decode_tok_per_sec,
-                                                peak_rss_bytes: plan.estimated_peak_rss_bytes,
+                                                peak_rss_bytes: measured_peak_rss,
                                                 tokens_prompt: prompt_n,
                                                 tokens_predicted: predicted_n,
                                                 is_simulated: false,

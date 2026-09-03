@@ -20,6 +20,11 @@ pub fn detect_memory() -> MemoryProfile {
 }
 
 pub fn get_process_page_faults(pid: u32) -> (u64, u64) {
+    let (faults, ws, _) = get_process_memory_info(pid);
+    (faults, ws)
+}
+
+pub fn get_process_memory_info(pid: u32) -> (u64, u64, u64) {
     #[cfg(windows)]
     unsafe {
         use windows_sys::Win32::System::ProcessStatus::{
@@ -42,6 +47,7 @@ pub fn get_process_page_faults(pid: u32) -> (u64, u64) {
                 return (
                     counters.PageFaultCount as u64,
                     counters.WorkingSetSize as u64,
+                    counters.PeakWorkingSetSize as u64,
                 );
             }
             windows_sys::Win32::Foundation::CloseHandle(handle);
@@ -50,12 +56,16 @@ pub fn get_process_page_faults(pid: u32) -> (u64, u64) {
 
     #[cfg(not(windows))]
     {
-        let _ = pid; // pid is not used on non-Windows: getrusage(RUSAGE_SELF) measures the current process
+        let _ = pid;
         let mut rusage: libc::rusage = unsafe { std::mem::zeroed() };
         if unsafe { libc::getrusage(libc::RUSAGE_SELF, &mut rusage) } == 0 {
-            return (rusage.ru_majflt as u64, rusage.ru_minflt as u64);
+            return (
+                rusage.ru_majflt as u64,
+                (rusage.ru_maxrss as u64) * 1024,
+                (rusage.ru_maxrss as u64) * 1024,
+            );
         }
     }
 
-    (1200, 45000)
+    (1200, 45000 * 4096, 45000 * 4096)
 }
