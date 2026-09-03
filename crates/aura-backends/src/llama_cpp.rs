@@ -216,6 +216,12 @@ impl BackendAdapter for LlamaCppAdapter {
                             let health_start = Instant::now();
 
                             while health_start.elapsed() < Duration::from_secs(90) {
+                                if let Some(ref mut child) = _guard.0 {
+                                    if let Ok(Some(exit_status)) = child.try_wait() {
+                                        warn!("llama-server PID={} exited prematurely with status: {:?}", child_pid, exit_status);
+                                        break;
+                                    }
+                                }
                                 if let Ok(resp) = cli.get(&health_url).send() {
                                     if resp.status().is_success() {
                                         server_ready = true;
@@ -290,7 +296,9 @@ impl BackendAdapter for LlamaCppAdapter {
                                                 plan.estimated_peak_rss_bytes as f64 / 1e9
                                             );
 
-                                            let backend_name = if gpu_prof.present && plan.gpu_layers_offloaded > 0 {
+                                            let backend_name = if gpu_prof.present
+                                                && plan.gpu_layers_offloaded > 0
+                                            {
                                                 "llama-server (CUDA)".to_string()
                                             } else {
                                                 "llama-server (CPU)".to_string()

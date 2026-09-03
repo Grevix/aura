@@ -42,7 +42,8 @@ pub fn execute_plan(model_path: &str, memory: &str, context: Option<usize>) {
 
     let plan = generate_execution_plan(&hw, &manifest, budget_bytes, context);
 
-    println!("=== EXECUTION PLAN FOR: {} ===", manifest.name);
+    println!("=== AURA EXECUTION DECISION ===");
+    println!("Model              : {}", manifest.name);
     println!("Architecture       : {}", manifest.architecture_family);
     println!(
         "Requested Budget   : {} ({:.2} GB)",
@@ -58,7 +59,13 @@ pub fn execute_plan(model_path: &str, memory: &str, context: Option<usize>) {
             "⚠️ INFEASIBLE"
         }
     );
-    println!("Details            : {}", plan.feasibility_notes);
+    println!("Decision Rationale : {}", plan.feasibility_notes);
+    if !plan.is_feasible {
+        println!("\n💡 Recommendation:");
+        println!("  - Increase budget to {:.1} GB", plan.estimated_peak_rss_bytes as f64 / 1e9 + 0.5);
+        println!("  - Or reduce context length (e.g., --context 1024)");
+        println!("  - Or select lower-bit quantization (e.g., Q3_K_S or MXFP4)");
+    }
 
     println!("\n=== ESTIMATED MEMORY FOOTPRINT ===");
     println!(
